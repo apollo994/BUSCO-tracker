@@ -1,0 +1,168 @@
+name: Run BUSCO Analysis
+
+on:
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: 'Number of annotations to process (default: 3)'
+        required: false
+        default: '3'
+
+permissions:
+  contents: write
+
+jobs:
+  busco-analysis:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          
+      - name: Install Python dependencies
+        run: |
+          pip install requests
+          pip install annocli
+          
+      - name: Pull Docker images
+        run: |
+          echo "Pulling AGAT Docker image..."
+          docker pull quay.io/biocontainers/agat:1.4.0--pl5321hdfd78af_0
+          
+          echo "Pulling BUSCO Docker image..."
+          docker pull ezlabgva/busco:v5.7.1_cv1
+          
+      - name: Download BUSCO lineage dataset
+        run: |
+          echo "Downloading eukaryota_odb12 lineage dataset..."
+          mkdir -p busco_downloads
+          docker run --rm \
+            -v "$(pwd)/busco_downloads:/busco_downloads" \
+            ezlabgva/busco:v5.7.1_cv1 \
+            busco --download eukaryota_odb12 --download_path /busco_downloads
+          
+          # List downloaded datasets
+          echo "Downloaded datasets:"
+          ls -la busco_downloads/
+          
+      - name: Create Docker wrapper scripts
+        run: |
+          mkdir -p bin
+          
+          # Create AGAT wrapper for agat_sp_keep_longest_isoform.pl
+          cat > bin/agat_sp_keep_longest_isoform.pl << 'EOF'
+          #!/bin/bash
+          docker run --rm \
+            -v "$(pwd)":/data \
+            -w /data \
+            quay.io/biocontainers/agat:1.4.0--pl5321hdfd78af_0 \
+            agat_sp_keep_longest_isoform.pl "$@"
+          EOF
+          chmod +x bin/agat_sp_keep_longest_isoform.pl
+          
+          # Create AGAT wrapper for agat_sp_extract_sequences.pl
+          cat > bin/agat_sp_extract_sequences.pl << 'EOF'
+          #!/bin/bash
+          docker run --rm \
+            -v "$(pwd)":/data \
+            -w /data \
+            quay.io/biocontainers/agat:1.4.0--pl5321hdfd78af_0 \
+            agat_sp_extract_sequences.pl "$@"
+          EOF
+          chmod +x bin/agat_sp_extract_sequences.pl
+          
+          # Create BUSCO wrapper
+          cat > bin/busco << 'EOF'
+          #!/bin/bash
+          docker run --rm \
+            -v "$(pwd)":/data \
+            -v "$(pwd)/busco_downloads":/busco_downloads \
+            -e BUSCO_CONFIG_FILE=/busco_downloads/config.ini \
+            -w /data \
+            ezlabgva/busco:v5.7.1_cv1 \
+            busco "$@" --download_path /busco_downloads
+          EOF
+          chmod +x bin/busco
+          
+          # Add bin to PATH
+          echo "$(pwd)/bin" >> $GITHUB_PATH
+          
+      - name: Verify tool installation
+        run: |
+          echo "Checking annocli..."
+          annocli --version || echo "annocli installed"
+          
+          echo "Checking AGAT..."
+          ./bin/agat_sp_keep_longest_isoform.pl --help | head -5 || true
+          
+          echo "Checking BUSCO..."
+          ./bin/busco --version || true
+          
+      - name: Prepare limited annotations file
+        run: |
+          echo "Creating limited annotations file with first ${{ github.event.inputs.limit || 3 }} annotations..."
+          head -n 1 annotations.tsv > annotations_limited.tsv
+          tail -n +2 annotations.tsv | head -n ${{ github.event.inputs.limit || 3 }} >> annotations_limited.tsv
+          echo "Limited annotations file created:"
+          cat annotations_limited.tsv
+          
+      - name: Update Python script to use limited file
+        run: |
+          # Create a temporary version of the script that uses annotations_limited.tsv
+          sed 's/ANNOTATIONS_FILE = "annotations.tsv"/ANNOTATIONS_FILE = "annotations_limited.tsv"/' \
+            scripts/run_busco_analysis.py > scripts/run_busco_analysis_limited.py
+          chmod +x scripts/run_busco_analysis_limited.py
+          
+      - name: Run BUSCO analysis
+        run: |
+          export PATH="$(pwd)/bin:$PATH"
+          python scripts/run_busco_analysis_limited.py
+        continue-on-error: true
+        
+      - name: Display results
+        run: |
+          echo "=== BUSCO Results ==="
+          if [ -f BUSCO.tsv ]; then
+            cat BUSCO.tsv
+          else
+            echo "No BUSCO.tsv file found"
+          fi
+          
+          echo ""
+          echo "=== Failures ==="
+          if [ -f fails.tsv ]; then
+            cat fails.tsv
+          else
+            echo "No fails.tsv file found"
+          fi
+          
+      - name: Upload results as artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: busco-results-${{ github.run_number }}
+          path: |
+            BUSCO.tsv
+            fails.tsv
+            annotations_limited.tsv
+          
+      - name: Commit results
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          
+          # Add result files
+          git add BUSCO.tsv fails.tsv
+          
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Update BUSCO analysis results (processed ${{ github.event.inputs.limit || 3 }} annotations) [skip ci]
+
+          Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>"
+            git push
+          fi

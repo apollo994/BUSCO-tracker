@@ -59,16 +59,17 @@ def unzip_file(gzip_path):
         raise PipelineError("unzip", f"Failed to unzip {gzip_path}: {str(e)}")
 
 
-def run_command(cmd, step_name, cwd=None):
+def run_command(cmd, step_name, cwd=None, shell=False):
     """Run a shell command and handle errors."""
-    logger.info(f"Running {step_name}: {' '.join(cmd)}")
+    logger.info(f"Running {step_name}: {' '.join(cmd) if not shell else cmd}")
     try:
         result = subprocess.run(
             cmd,
             capture_output=True,
             text=True,
             check=True,
-            cwd=cwd
+            cwd=cwd,
+            shell=shell
         )
         logger.info(f"{step_name} completed successfully")
         return result.stdout
@@ -121,17 +122,17 @@ def extract_protein_sequences(fasta_file, gff_file, work_dir):
 
 def run_busco(protein_file, work_dir):
     """Run BUSCO analysis on protein sequences."""
-    output_dir = work_dir / "busco_output"
+    output_name = "busco_output"
     cmd = [
         "busco",
         "-m", "protein",
-        "-i", str(protein_file),
+        "-i", str(protein_file.name),
         "-l", "eukaryota_odb12",
-        "-o", str(output_dir.name),
-        "--offline"  # Use offline mode if datasets are pre-downloaded
+        "-o", output_name,
+        "-c", "2"  # Use 2 CPUs
     ]
     run_command(cmd, "busco_analysis", cwd=str(work_dir))
-    return output_dir
+    return work_dir / output_name
 
 
 def parse_busco_results(busco_output_dir):
