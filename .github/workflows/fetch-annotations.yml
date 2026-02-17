@@ -2,8 +2,7 @@ name: Fetch Annotations
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # Run daily at midnight UTC
-  workflow_dispatch:  # Allow manual trigger
+  workflow_dispatch:
 
 permissions:
   contents: write  # Required to push commits
@@ -42,8 +41,6 @@ jobs:
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "Update annotations.tsv [skip ci]
-
-          Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>"
+            git commit -m "Update annotations.tsv"
             git push
           fi
