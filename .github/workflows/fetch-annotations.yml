@@ -1,7 +1,6 @@
 name: Fetch Annotations
 
 on:
-  schedule:
   workflow_dispatch:
 
 permissions:
