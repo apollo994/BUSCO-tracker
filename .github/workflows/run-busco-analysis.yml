@@ -49,7 +49,7 @@ jobs:
             "busco==6.0.0"
           
           echo "Verifying installations..."
-          agat_sp_keep_longest_isoform.pl --version
-          agat_sp_extract_sequences.pl --version
-          busco --version
+          agat_sp_keep_longest_isoform.pl --help | head -n 5
+          agat_sp_extract_sequences.pl --help | head -n 5
+          busco --help | head -n 5
           
