@@ -24,10 +24,11 @@ jobs:
         with:
           python-version: '3.11'
           
-      - name: Install Python dependencies
+      - name: Install annocli
         run: |
-          pip install requests
-          pip install annocli
+          echo "Installing annocli"
+          git clone https://github.com/apollo994/annocli.git
+          pip install -e annocli/
           
       - name: Pull Docker images
         run: |
