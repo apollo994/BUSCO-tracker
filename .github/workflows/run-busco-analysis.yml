@@ -43,14 +43,14 @@ jobs:
       - name: Install AGAT and BUSCO via conda
         shell: bash -el {0}
         run: |
-          echo "Installing all tools in a single command for better dependency resolution..."
+          echo "Installing agat and busco"
           mamba install -y -c conda-forge -c bioconda \
-            "biopython>=1.79" \
+            # "biopython>=1.79" \
             agat \
             "busco>=6.0.0"
           
           echo "Verifying installations..."
-          python -c "import Bio; print(f'Biopython version: {Bio.__version__}')"
+          # python -c "import Bio; print(f'Biopython version: {Bio.__version__}')"
           agat_sp_keep_longest_isoform.pl --help | head -5 || true
           busco --version
           
