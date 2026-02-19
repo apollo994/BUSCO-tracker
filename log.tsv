@@ -3,3 +3,4 @@ annotation_id   run_at  result  step
 12345	2026-02-19 11:29:03	fail	lineage_missing
 12345	2026-02-19 11:35:59	success	NA
 1a8f9f4c4ff08cfdee77714e62350604	2026-02-19 15:44:24	success	NA
+02fa2af8d7a42f6e696cfc2231704cd8	2026-02-19 16:33:40	success	NA
