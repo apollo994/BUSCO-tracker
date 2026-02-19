@@ -41,8 +41,12 @@ if ! command -v conda &> /dev/null; then
 fi
 
 
+OUT_NAME=$(basename "${outfolder}")
+OUT_PATH=$(dirname "${outfolder}")
+
 busco -m protein \
 	-i ${proteins} \
 	-l ${lineage} \
 	--cpu 2 \
-	-o ${outfolder}
+	--out_path "${OUT_PATH}" \
+	-o "${OUT_NAME}"
