@@ -1,0 +1,62 @@
+name: Submit BUSCO Jobs
+
+on:
+  workflow_dispatch:
+    inputs:
+      max_submissions:
+        description: 'Max number of jobs to submit per run (0 = unlimited)'
+        required: false
+        default: '10'
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  submit-jobs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Find and submit unprocessed annotations
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MAX: ${{ github.event.inputs.max_submissions }}
+          REPO: ${{ github.repository }}
+          REF: ${{ github.ref_name }}
+        run: |
+          # Build set of already-processed annotation_ids from log.tsv (skip header)
+          processed=$(tail -n +2 log.tsv | cut -f1 | sort -u)
+
+          submitted=0
+
+          while IFS=$'\t' read -r annotation_id _rest; do
+            [ -z "$annotation_id" ] && continue
+
+            # Skip if already in log.tsv
+            if echo "$processed" | grep -qx "$annotation_id"; then
+              continue
+            fi
+
+            if [ "$MAX" -gt 0 ] && [ "$submitted" -ge "$MAX" ]; then
+              echo "Reached max submissions ($MAX), stopping."
+              break
+            fi
+
+            echo "Submitting: $annotation_id"
+            curl -s -o /dev/null -w "%{http_code}" -X POST \
+              -H "Authorization: Bearer ${GH_TOKEN}" \
+              -H "Accept: application/vnd.github.v3+json" \
+              "https://api.github.com/repos/${REPO}/actions/workflows/run-busco-analysis.yml/dispatches" \
+              -d "{\"ref\":\"${REF}\",\"inputs\":{\"annotation_id\":\"${annotation_id}\"}}"
+            echo ""
+
+            submitted=$((submitted + 1))
+            # Avoid hitting the GitHub API rate limit
+            sleep 2
+
+          done < <(tail -n +2 annotations.tsv)
+
+          echo "Submitted $submitted jobs."
