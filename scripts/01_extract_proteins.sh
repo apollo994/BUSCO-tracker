@@ -9,8 +9,8 @@ if [ "$#" -ne 2 ]; then
     exit 1
 fi
 
-GFF_INPUT="$1"
-FASTA_INPUT="$2"
+GFF_INPUT=$(realpath "$1")
+FASTA_INPUT=$(realpath "$2")
 
 # Check if files exist
 if [ ! -f "$GFF_INPUT" ]; then
@@ -73,6 +73,5 @@ agat_sp_extract_sequences.pl \
 # Clean up temporary files
 echo "[$(date +"%Y-%m-%d %H:%M:%S")] Cleaning up temporary files..."
 rm -rf "$WORK_DIR"
-
 
 echo "[$(date +"%Y-%m-%d %H:%M:%S")] Done! Protein sequences saved to: $PROTEIN_OUTPUT"
