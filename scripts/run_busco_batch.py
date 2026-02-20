@@ -35,10 +35,21 @@ def load_ids(tsv_path):
         return set()
     ids = set()
     with open(p, newline='') as f:
-        reader = csv.DictReader(f, delimiter='\t')
-        for row in reader:
-            if row.get('annotation_id'):
-                ids.add(row['annotation_id'])
+        first_line = f.readline()
+        if not first_line:
+            return ids
+        f.seek(0)
+        has_header = first_line.split('\t')[0].strip() == 'annotation_id'
+        if has_header:
+            reader = csv.DictReader(f, delimiter='\t')
+            for row in reader:
+                if row.get('annotation_id'):
+                    ids.add(row['annotation_id'])
+        else:
+            reader = csv.reader(f, delimiter='\t')
+            for row in reader:
+                if row and row[0].strip():
+                    ids.add(row[0].strip())
     return ids
 
 

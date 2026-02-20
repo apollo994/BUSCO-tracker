@@ -34,10 +34,23 @@ def load_ids(tsv_path, column='annotation_id'):
         return set()
     ids = set()
     with open(p, newline='') as f:
-        reader = csv.DictReader(f, delimiter='\t')
-        for row in reader:
-            if column in row and row[column]:
-                ids.add(row[column])
+        first_line = f.readline()
+        if not first_line:
+            return ids
+        f.seek(0)
+        # Detect whether file has a header by checking if first field looks like a column name
+        has_header = first_line.split('\t')[0].strip() == column
+        if has_header:
+            reader = csv.DictReader(f, delimiter='\t')
+            for row in reader:
+                if row.get(column):
+                    ids.add(row[column])
+        else:
+            # No header: annotation_id is always the first column
+            reader = csv.reader(f, delimiter='\t')
+            for row in reader:
+                if row and row[0].strip():
+                    ids.add(row[0].strip())
     return ids
 
 
