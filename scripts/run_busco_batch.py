@@ -57,11 +57,16 @@ def load_annotations(tsv_path):
     """Return dict of annotation_id → {annotation_url, assembly_url}."""
     annotations = {}
     with open(tsv_path, newline='') as f:
-        reader = csv.DictReader(f, delimiter='\t')
+        reader = csv.reader(f, delimiter='\t')
         for row in reader:
-            annotations[row['annotation_id']] = {
-                'annotation_url': row['annotation_url'],
-                'assembly_url':   row['assembly_url'],
+            if not row or not row[0].strip():
+                continue
+            # Skip header row if present
+            if row[0].strip() == 'annotation_id':
+                continue
+            annotations[row[0].strip()] = {
+                'annotation_url': row[1].strip(),
+                'assembly_url':   row[2].strip(),
             }
     return annotations
 
