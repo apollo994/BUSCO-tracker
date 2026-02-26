@@ -53,22 +53,14 @@ else
     FASTA_FILE="$WORK_DIR/input.fna"
 fi
 
-# Step 1: Extract longest isoforms
-echo "[$(date +"%Y-%m-%d %H:%M:%S")] Extracting longest isoforms..."
-LONGISOFORM_GFF="$WORK_DIR/${GFF_BASENAME}_longisoforms.gff3"
-agat_sp_keep_longest_isoform.pl \
-    -f "$GFF_FILE" \
-    -o "$LONGISOFORM_GFF"
-
-# Step 2: Extract protein sequences
-echo "[$(date +"%Y-%m-%d %H:%M:%S")] Extracting protein sequences..."
+echo "[$(date +"%Y-%m-%d %H:%M:%S")] Extracting aa seq of longest isoforms..."
 PROTEIN_OUTPUT="$INPUT_DIR/${GFF_BASENAME}_proteins.faa"
-agat_sp_extract_sequences.pl \
-    -f "$FASTA_FILE" \
-    -g "$LONGISOFORM_GFF" \
-    -t CDS \
-    -p \
-    -o "$PROTEIN_OUTPUT"
+awk longest_transcript_per_gene.awk $GFF_FILE $FASTA_FILE > $PROTEIN_OUTPUT
+
+if [ ! -s "${proteins}" ]; then
+    echo "Error: Protein file ${proteins} is empty"
+    exit 1
+fi
 
 # Clean up temporary files
 echo "[$(date +"%Y-%m-%d %H:%M:%S")] Cleaning up temporary files..."

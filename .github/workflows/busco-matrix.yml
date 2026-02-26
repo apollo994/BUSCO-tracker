@@ -34,7 +34,7 @@ jobs:
 
       - name: Build matrix
         id: build
-        run: python scripts/build_matrix.py annotations.tsv log.tsv --max-per-job ${{ github.event.inputs.max_per_job }}
+        run: python scripts/build_matrix.py annotations.tsv BUSCO/eukaryota_odb12/log.tsv --max-per-job ${{ github.event.inputs.max_per_job }}
 
       - name: Summary
         run: |
@@ -69,13 +69,16 @@ jobs:
           channels: conda-forge,bioconda
           channel-priority: strict
           use-mamba: true
+          conda-remove-defaults: true
+          cache-environment: true
+          cache-environment-key: conda-${{ runner.os }}-busco6.0.0-gffutils0.13
 
-      - name: Install AGAT and BUSCO
+      - name: Install BUSCO and gffutils
         shell: bash -el {0}
         run: |
           mamba install -y -c conda-forge -c bioconda \
-            "agat==1.6.1" \
-            "busco==6.0.0"
+            "busco==6.0.0" \
+            "gffutils==0.13"
 
       - name: Install annocli
         run: |
@@ -87,7 +90,7 @@ jobs:
         run: |
           python scripts/run_busco_batch.py \
             annotations.tsv \
-            log.tsv \
+            BUSCO/eukaryota_odb12/log.tsv \
             ${{ matrix.chunk_index }} \
             ${{ needs.setup.outputs.chunk_count }} \
             batch_output/ \
@@ -129,21 +132,21 @@ jobs:
           python-version: '3.11'
 
       - name: Aggregate results
-        run: python scripts/aggregate_results.py artifacts/ BUSCO.tsv log.tsv
+        run: python scripts/aggregate_results.py artifacts/ BUSCO/eukaryota_odb12/BUSCO.tsv BUSCO/eukaryota_odb12/log.tsv
 
       - name: Display summary
         run: |
           echo "=== BUSCO.tsv — last 10 rows ==="
-          tail -n 10 BUSCO.tsv
+          tail -n 10 BUSCO/eukaryota_odb12/BUSCO.tsv
           echo ""
           echo "=== log.tsv — last 10 rows ==="
-          tail -n 10 log.tsv
+          tail -n 10 BUSCO/eukaryota_odb12/log.tsv
 
       - name: Commit and push
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add BUSCO.tsv log.tsv
+          git add BUSCO/eukaryota_odb12/BUSCO.tsv BUSCO/eukaryota_odb12/log.tsv
           if git diff --staged --quiet; then
             echo "No new results to commit"
           else
