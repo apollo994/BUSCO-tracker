@@ -65,7 +65,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/miniforge3/envs/busco-env
-          key: conda-${{ runner.os }}-busco6.0.0-gffutils0.13-annocli
+          key: conda-${{ runner.os }}-busco6.0.0-gffread0.12.07-annocli
 
       - name: Set up Conda
         uses: conda-incubator/setup-miniconda@v3
@@ -79,13 +79,13 @@ jobs:
           conda-remove-defaults: true
           activate-environment: busco-env
 
-      - name: Install BUSCO and gffutils
+      - name: Install BUSCO and gffread
         if: steps.conda-cache.outputs.cache-hit != 'true'
         shell: bash -el {0}
         run: |
           mamba install -y -c conda-forge -c bioconda \
             "busco==6.0.0" \
-            "gffutils==0.13"
+            "gffread==0.12.7"
 
       - name: Install annocli
         if: steps.conda-cache.outputs.cache-hit != 'true'

@@ -54,10 +54,14 @@ else
     FASTA_FILE="$WORK_DIR/input.fna"
 fi
 
-echo "[$(date +"%Y-%m-%d %H:%M:%S")] Extracting aa seq of longest isoforms..."
+echo "[$(date +"%Y-%m-%d %H:%M:%S")] Extracting aa seqeuences..."
+ALL_PROTEINS_OUTPUT="$INPUT_DIR/${GFF_BASENAME}_ALL_proteins.faa"
+gffread -g "$FASTA_FILE" -y "$ALL_PROTEINS_OUTPUT" "$GFF_FILE"
+
+echo "[$(date +"%Y-%m-%d %H:%M:%S")] Extracting longest isoforms..."
 PROTEIN_OUTPUT="$INPUT_DIR/${GFF_BASENAME}_proteins.faa"
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
-awk -f "$SCRIPT_DIR/longest_transcript_per_gene.awk" "$GFF_FILE" "$FASTA_FILE" > "$PROTEIN_OUTPUT"
+awk -f "$SCRIPT_DIR/longest_transcript_per_gene.awk" "$GFF_FILE" "$ALL_PROTEINS_OUTPUT" > "$PROTEIN_OUTPUT"
 
 if [ ! -s "${PROTEIN_OUTPUT}" ]; then
     echo "Error: Protein file ${PROTEIN_OUTPUT} is empty"
