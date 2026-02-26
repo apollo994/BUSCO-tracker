@@ -33,6 +33,7 @@ GFF_BASENAME=$(basename "$GFF_BASENAME" .gff)
 
 # Decompress files if needed
 WORK_DIR=$(mktemp -d)
+trap 'rm -rf "$WORK_DIR"' EXIT
 echo "[$(date +"%Y-%m-%d %H:%M:%S")] Working directory: $WORK_DIR"
 
 if [[ "$GFF_INPUT" == *.gz ]]; then
@@ -58,8 +59,8 @@ PROTEIN_OUTPUT="$INPUT_DIR/${GFF_BASENAME}_proteins.faa"
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
 awk -f "$SCRIPT_DIR/longest_transcript_per_gene.awk" "$GFF_FILE" "$FASTA_FILE" > "$PROTEIN_OUTPUT"
 
-if [ ! -s "${proteins}" ]; then
-    echo "Error: Protein file ${proteins} is empty"
+if [ ! -s "${PROTEIN_OUTPUT}" ]; then
+    echo "Error: Protein file ${PROTEIN_OUTPUT} is empty"
     exit 1
 fi
 
