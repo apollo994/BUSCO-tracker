@@ -312,7 +312,8 @@ def main():
             sys.exit(1)
 
         # 01_extract_proteins.sh writes <gff_basename>_proteins.faa next to the gff
-        protein_file = work_dir / "annotation_proteins.faa"
+        # alias_gff_file is annotation.aliasMatch.gff3.gz → basename = annotation.aliasMatch
+        protein_file = work_dir / "annotation.aliasMatch_proteins.faa"
         if not protein_file.exists():
             logger.error(f"Expected protein file not found: {protein_file}")
             append_to_log_tsv(
