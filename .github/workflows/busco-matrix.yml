@@ -60,20 +60,27 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Cache conda environment
+        id: conda-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/miniforge3/envs/busco-env
+          key: conda-${{ runner.os }}-busco6.0.0-gffutils0.13-annocli
+
       - name: Set up Conda
         uses: conda-incubator/setup-miniconda@v3
         with:
-          auto-update-conda: true
+          auto-update-conda: false
           python-version: '3.11'
           miniforge-version: latest
           channels: conda-forge,bioconda
           channel-priority: strict
           use-mamba: true
           conda-remove-defaults: true
-          cache-environment: true
-          cache-environment-key: conda-${{ runner.os }}-busco6.0.0-gffutils0.13
+          activate-environment: busco-env
 
       - name: Install BUSCO and gffutils
+        if: steps.conda-cache.outputs.cache-hit != 'true'
         shell: bash -el {0}
         run: |
           mamba install -y -c conda-forge -c bioconda \
@@ -81,9 +88,11 @@ jobs:
             "gffutils==0.13"
 
       - name: Install annocli
+        if: steps.conda-cache.outputs.cache-hit != 'true'
+        shell: bash -el {0}
         run: |
           git clone https://github.com/apollo994/annocli.git
-          pip install -e annocli/
+          pip install ./annocli/
 
       - name: Run batch
         shell: bash -el {0}
