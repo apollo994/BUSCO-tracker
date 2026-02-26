@@ -55,7 +55,7 @@ fi
 
 echo "[$(date +"%Y-%m-%d %H:%M:%S")] Extracting aa seq of longest isoforms..."
 PROTEIN_OUTPUT="$INPUT_DIR/${GFF_BASENAME}_proteins.faa"
-awk longest_transcript_per_gene.awk $GFF_FILE $FASTA_FILE > $PROTEIN_OUTPUT
+awk -f longest_transcript_per_gene.awk "$GFF_FILE" "$FASTA_FILE" > "$PROTEIN_OUTPUT"
 
 if [ ! -s "${proteins}" ]; then
     echo "Error: Protein file ${proteins} is empty"
