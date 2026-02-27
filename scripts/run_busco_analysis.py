@@ -182,6 +182,7 @@ def append_to_log_tsv(log_file, annotation_id, result, step):
     logger.info(f"Logging {result} for {annotation_id} to {log_file}")
     file_exists = Path(log_file).exists()
     run_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    step = " ".join(step.splitlines()).strip()
     with open(log_file, "a", newline="") as f:
         writer = csv.writer(f, delimiter="\t")
         if not file_exists:
