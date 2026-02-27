@@ -6,13 +6,13 @@ Downloads annotation and assembly files from URLs, then runs the full
 BUSCO pipeline using the shell scripts.
 
 Usage:
-    python run_busco_analysis.py <annotation_url> <assembly_url> <annotation_id> <busco_tsv> <log_tsv>
+    python run_busco_analysis.py <annotation_url> <assembly_url> <annotation_id> <busco_tsv> <error_log_tsv>
 
 Example:
     python run_busco_analysis.py \\
         https://example.com/annotation.gff.gz \\
         https://example.com/assembly.fna.gz \\
-        ann123 BUSCO.tsv log.tsv
+        ann123 BUSCO.tsv error_log.tsv
 """
 import csv
 import logging
@@ -26,7 +26,7 @@ import urllib.request
 from datetime import datetime
 from pathlib import Path
 
-from utils import BUSCO_HEADER, LOG_HEADER
+from utils import BUSCO_HEADER, ERROR_LOG_HEADER
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
@@ -162,23 +162,17 @@ def append_to_busco_tsv(busco_file, annotation_id, results):
         )
 
 
-def append_to_log_tsv(log_file, annotation_id, result, step):
-    """
-    Append execution log to log.tsv.
-
-    Args:
-        result: 'success' or 'fail'
-        step:   Failed step name, or 'NA' on success
-    """
-    logger.info(f"Logging {result} for {annotation_id} to {log_file}")
+def append_to_log_tsv(log_file, annotation_id, step):
+    """Append a failed run to error_log.tsv."""
+    logger.info(f"Logging failure for {annotation_id} to {log_file}")
     file_exists = Path(log_file).exists()
     run_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     step = " ".join(step.splitlines()).strip()
     with open(log_file, "a", newline="") as f:
         writer = csv.writer(f, delimiter="\t")
         if not file_exists:
-            writer.writerow(LOG_HEADER)
-        writer.writerow([annotation_id, run_at, result, step])
+            writer.writerow(ERROR_LOG_HEADER)
+        writer.writerow([annotation_id, run_at, step])
 
 
 def main():
@@ -194,14 +188,14 @@ def main():
         print("  assembly_url   - URL to FASTA assembly file (can be .gz)")
         print("  annotation_id  - Unique identifier for this annotation")
         print("  busco_tsv      - Path to BUSCO.tsv output file")
-        print("  log_tsv        - Path to log.tsv file")
+        print("  error_log_tsv  - Path to error_log.tsv file")
         sys.exit(1)
 
     annotation_url = sys.argv[1]
     assembly_url = sys.argv[2]
     annotation_id = sys.argv[3]
     busco_tsv = sys.argv[4]
-    log_tsv = sys.argv[5]
+    log_tsv = sys.argv[5]  # error_log.tsv
 
     logger.info(f"Starting BUSCO analysis for {annotation_id}")
 
@@ -213,7 +207,7 @@ def main():
     for script in (extract_script, busco_script):
         if not script.exists():
             logger.error(f"Required script not found: {script}")
-            append_to_log_tsv(log_tsv, annotation_id, "fail", "script_missing")
+            append_to_log_tsv(log_tsv, annotation_id, "script_missing")
             sys.exit(1)
 
     # Work inside a temp directory so downloads don't pollute the repo
@@ -233,12 +227,12 @@ def main():
 
         ok, err = download_file(annotation_url, gff_file)
         if not ok:
-            append_to_log_tsv(log_tsv, annotation_id, "fail", err)
+            append_to_log_tsv(log_tsv, annotation_id, err)
             sys.exit(1)
 
         ok, err = download_file(assembly_url, fasta_file)
         if not ok:
-            append_to_log_tsv(log_tsv, annotation_id, "fail", err)
+            append_to_log_tsv(log_tsv, annotation_id, err)
             sys.exit(1)
 
         # ------------------------------------------------------------------
@@ -269,18 +263,18 @@ def main():
             logger.error(f"stdout: {e.stdout}")
             logger.error(f"stderr: {e.stderr}")
             append_to_log_tsv(
-                log_tsv, annotation_id, "fail", e.stderr if e.stderr else "NA"
+                log_tsv, annotation_id, e.stderr if e.stderr else "alias_ids_failed"
             )
             sys.exit(1)
         except FileNotFoundError as e:
             logger.error("annocli not found")
-            append_to_log_tsv(log_tsv, annotation_id, "fail", str(e))
+            append_to_log_tsv(log_tsv, annotation_id, str(e))
             sys.exit(1)
 
         if not alias_gff_file.exists():
             logger.error(f"Expected aliasMatch file not found: {alias_gff_file}")
             append_to_log_tsv(
-                log_tsv, annotation_id, "fail", alias_stderr if alias_stderr else "NA"
+                log_tsv, annotation_id, alias_stderr if alias_stderr else "alias_output_missing"
             )
             sys.exit(1)
 
@@ -299,7 +293,7 @@ def main():
 
         if not success:
             append_to_log_tsv(
-                log_tsv, annotation_id, "fail", stderr if stderr else "NA"
+                log_tsv, annotation_id, stderr if stderr else "extract_proteins_failed"
             )
             sys.exit(1)
 
@@ -309,7 +303,7 @@ def main():
         if not protein_file.exists():
             logger.error(f"Expected protein file not found: {protein_file}")
             append_to_log_tsv(
-                log_tsv, annotation_id, "fail", stderr if stderr else "NA"
+                log_tsv, annotation_id, stderr if stderr else "protein_file_missing"
             )
             sys.exit(1)
 
@@ -333,7 +327,7 @@ def main():
                 "Lineage folder not found. Tried: "
                 + ", ".join(str(p) for p in lineage_candidates)
             )
-            append_to_log_tsv(log_tsv, annotation_id, "fail", "lineage_missing")
+            append_to_log_tsv(log_tsv, annotation_id, "lineage_missing")
             sys.exit(1)
 
         busco_output = str(work_dir / f"busco_{annotation_id}")
@@ -346,7 +340,7 @@ def main():
 
         if not success:
             append_to_log_tsv(
-                log_tsv, annotation_id, "fail", stderr if stderr else "NA"
+                log_tsv, annotation_id, stderr if stderr else "busco_failed"
             )
             sys.exit(1)
 
@@ -359,7 +353,6 @@ def main():
 
         results = parse_busco_results(busco_output)
         append_to_busco_tsv(busco_tsv, annotation_id, results)
-        append_to_log_tsv(log_tsv, annotation_id, "success", "NA")
 
         logger.info("=" * 80)
         logger.info(f"✓ Successfully completed BUSCO analysis for {annotation_id}")
@@ -369,7 +362,7 @@ def main():
 
     except Exception as e:
         logger.error(f"Unexpected error: {e}")
-        append_to_log_tsv(log_tsv, annotation_id, "fail", "unexpected_error")
+        append_to_log_tsv(log_tsv, annotation_id, "unexpected_error")
         sys.exit(1)
 
     finally:

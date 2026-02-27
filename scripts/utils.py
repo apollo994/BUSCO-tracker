@@ -8,7 +8,14 @@ logger = logging.getLogger(__name__)
 
 BUSCO_HEADER = ['annotation_id', 'lineage', 'busco_count', 'complete',
                 'single', 'duplicated', 'fragmented', 'missing']
-LOG_HEADER = ['annotation_id', 'run_at', 'result', 'step']
+ERROR_LOG_HEADER = ['annotation_id', 'run_at', 'step']
+
+
+def compute_pending_ids(all_ids, success_ids, error_ids):
+    """Return pending IDs in priority order: never-run first, then failed retries."""
+    never_run = all_ids - success_ids - error_ids
+    failed    = error_ids - success_ids
+    return sorted(never_run) + sorted(failed)
 
 
 def load_ids(tsv_path, column='annotation_id'):
@@ -36,16 +43,3 @@ def load_ids(tsv_path, column='annotation_id'):
                     ids.add(row[0].strip())
     return ids
 
-
-def load_failed_ids(tsv_path):
-    """Return set of annotation_ids whose result == 'fail' in a log TSV."""
-    p = Path(tsv_path)
-    if not p.exists():
-        return set()
-    ids = set()
-    with open(p, newline='') as f:
-        reader = csv.DictReader(f, delimiter='\t')
-        for row in reader:
-            if row.get('result') == 'fail' and row.get('annotation_id'):
-                ids.add(row['annotation_id'])
-    return ids
