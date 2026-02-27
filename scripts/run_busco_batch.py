@@ -17,54 +17,19 @@ continues — the batch script always exits 0.
 """
 import sys
 import csv
+import argparse
 import subprocess
 import logging
+from datetime import datetime
 from pathlib import Path
+
+from utils import load_ids, load_failed_ids, LOG_HEADER
 
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
-
-
-def load_ids(tsv_path):
-    """Return set of annotation_ids from a TSV. Returns empty set if missing."""
-    p = Path(tsv_path)
-    if not p.exists():
-        return set()
-    ids = set()
-    with open(p, newline='') as f:
-        first_line = f.readline()
-        if not first_line:
-            return ids
-        f.seek(0)
-        has_header = first_line.split('\t')[0].strip() == 'annotation_id'
-        if has_header:
-            reader = csv.DictReader(f, delimiter='\t')
-            for row in reader:
-                if row.get('annotation_id'):
-                    ids.add(row['annotation_id'])
-        else:
-            reader = csv.reader(f, delimiter='\t')
-            for row in reader:
-                if row and row[0].strip():
-                    ids.add(row[0].strip())
-    return ids
-
-
-def load_failed_ids(tsv_path):
-    """Return set of annotation_ids whose result == 'fail' in log.tsv."""
-    p = Path(tsv_path)
-    if not p.exists():
-        return set()
-    ids = set()
-    with open(p, newline='') as f:
-        reader = csv.DictReader(f, delimiter='\t')
-        for row in reader:
-            if row.get('result') == 'fail' and row.get('annotation_id'):
-                ids.add(row['annotation_id'])
-    return ids
 
 
 def load_annotations(tsv_path):
@@ -86,41 +51,36 @@ def load_annotations(tsv_path):
 
 
 def main():
-    if len(sys.argv) not in (6, 7, 8):
-        print("Usage: python run_busco_batch.py "
-              "<annotations_tsv> <log_tsv> <chunk_index> <chunk_count> <output_dir> [max_per_job] [--retry-failed]")
-        sys.exit(1)
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('annotations_tsv', help='Path to annotations.tsv')
+    parser.add_argument('log_tsv',         help='Path to log.tsv')
+    parser.add_argument('chunk_index',     type=int, help='Index of this chunk (0-based)')
+    parser.add_argument('chunk_count',     type=int, help='Total number of chunks')
+    parser.add_argument('output_dir',      help='Directory to write result/log fragments')
+    parser.add_argument('max_per_job',     type=int, nargs='?', default=None,
+                        help='Cap on annotations processed by this chunk')
+    parser.add_argument('--retry-failed',  action='store_true',
+                        help='Process previously failed annotations instead of new pending ones')
+    args = parser.parse_args()
 
-    annotations_tsv = sys.argv[1]
-    log_tsv         = sys.argv[2]
-    chunk_index     = int(sys.argv[3])
-    chunk_count     = int(sys.argv[4])
-    output_dir      = Path(sys.argv[5])
-    max_per_job     = None
-    retry_failed    = False
-    for arg in sys.argv[6:]:
-        if arg == '--retry-failed':
-            retry_failed = True
-        else:
-            max_per_job = int(arg)
-
+    output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    annotations  = load_annotations(annotations_tsv)
-    if retry_failed:
-        pending_ids = sorted(load_failed_ids(log_tsv))
+    annotations = load_annotations(args.annotations_tsv)
+    if args.retry_failed:
+        pending_ids = sorted(load_failed_ids(args.log_tsv))
         logger.info(f"Retry mode: targeting {len(pending_ids)} previously failed annotations")
     else:
-        logged_ids  = load_ids(log_tsv)
+        logged_ids  = load_ids(args.log_tsv)
         pending_ids = sorted(set(annotations.keys()) - logged_ids)  # sorted for determinism
 
-    my_slice = pending_ids[chunk_index::chunk_count]
-    if max_per_job is not None:
-        my_slice = my_slice[:max_per_job]
+    my_slice = pending_ids[args.chunk_index::args.chunk_count]
+    if args.max_per_job is not None:
+        my_slice = my_slice[:args.max_per_job]
 
-    logger.info(f"Chunk {chunk_index}/{chunk_count}: "
+    logger.info(f"Chunk {args.chunk_index}/{args.chunk_count}: "
                 f"{len(my_slice)} annotations to process"
-                + (f" (capped at {max_per_job})" if max_per_job else ""))
+                + (f" (capped at {args.max_per_job})" if args.max_per_job else ""))
 
     script = Path(__file__).parent / 'run_busco_analysis.py'
     succeeded = 0
@@ -128,7 +88,7 @@ def main():
 
     for i, annotation_id in enumerate(my_slice, 1):
         ann = annotations[annotation_id]
-        result_tsv = str(output_dir / f"result_{annotation_id}.tsv")
+        result_tsv   = str(output_dir / f"result_{annotation_id}.tsv")
         log_fragment = str(output_dir / f"log_{annotation_id}.tsv")
 
         logger.info(f"[{i}/{len(my_slice)}] Processing {annotation_id}")
@@ -155,19 +115,16 @@ def main():
             # Write a log fragment so the aggregator records this failure
             # and the annotation is not silently rescheduled
             try:
-                from datetime import datetime
-                import csv as _csv
-                frag = Path(log_fragment)
-                with open(frag, 'w', newline='') as lf:
-                    w = _csv.writer(lf, delimiter='\t')
-                    w.writerow(['annotation_id', 'run_at', 'result', 'step'])
+                with open(log_fragment, 'w', newline='') as lf:
+                    w = csv.writer(lf, delimiter='\t')
+                    w.writerow(LOG_HEADER)
                     w.writerow([annotation_id,
                                 datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
                                 'fail', 'unexpected_error'])
             except Exception as write_err:
                 logger.error(f"  Could not write log fragment: {write_err}")
 
-    logger.info(f"Chunk {chunk_index} complete: "
+    logger.info(f"Chunk {args.chunk_index} complete: "
                 f"{succeeded} succeeded, {failed} failed out of {len(my_slice)}")
     # Always exit 0 — individual failures are recorded in log fragments
     sys.exit(0)

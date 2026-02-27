@@ -16,14 +16,14 @@ and appends new rows.
 import sys
 import csv
 import logging
+import os
+import tempfile
 from pathlib import Path
+
+from utils import load_failed_ids, BUSCO_HEADER, LOG_HEADER
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
-
-BUSCO_HEADER = ['annotation_id', 'lineage', 'busco_count', 'complete',
-                'single', 'duplicated', 'fragmented', 'missing']
-LOG_HEADER   = ['annotation_id', 'run_at', 'result', 'step']
 
 
 def load_existing_ids(tsv_path):
@@ -35,37 +35,32 @@ def load_existing_ids(tsv_path):
     with open(p, newline='') as f:
         reader = csv.DictReader(f, delimiter='\t')
         for row in reader:
-            ids.add(row['annotation_id'])
-    return ids
-
-
-def load_failed_ids(tsv_path):
-    """Return set of annotation_ids whose result == 'fail' in log.tsv."""
-    p = Path(tsv_path)
-    if not p.exists():
-        return set()
-    ids = set()
-    with open(p, newline='') as f:
-        reader = csv.DictReader(f, delimiter='\t')
-        for row in reader:
-            if row.get('result') == 'fail':
+            if row.get('annotation_id'):
                 ids.add(row['annotation_id'])
     return ids
 
 
 def remove_ids_from_tsv(tsv_path, ids_to_remove):
-    """Rewrite tsv_path keeping only rows whose annotation_id is NOT in ids_to_remove."""
+    """Rewrite tsv_path keeping only rows whose annotation_id is NOT in ids_to_remove.
+    Uses an atomic write (temp file + os.replace) to avoid corruption on failure.
+    """
     p = Path(tsv_path)
     if not p.exists() or not ids_to_remove:
         return
     with open(p, newline='') as f:
         reader = csv.DictReader(f, delimiter='\t')
         header = reader.fieldnames
-        rows = [row for row in reader if row['annotation_id'] not in ids_to_remove]
-    with open(p, 'w', newline='') as f:
-        writer = csv.DictWriter(f, fieldnames=header, delimiter='\t')
-        writer.writeheader()
-        writer.writerows(rows)
+        rows = [row for row in reader if row.get('annotation_id') not in ids_to_remove]
+    tmp_fd, tmp_path = tempfile.mkstemp(dir=p.parent, suffix='.tmp')
+    try:
+        with os.fdopen(tmp_fd, 'w', newline='') as f:
+            writer = csv.DictWriter(f, fieldnames=header, delimiter='\t')
+            writer.writeheader()
+            writer.writerows(rows)
+        os.replace(tmp_path, p)
+    except Exception:
+        os.unlink(tmp_path)
+        raise
     logger.info(f"Removed {len(ids_to_remove)} failed rows from {tsv_path}")
 
 

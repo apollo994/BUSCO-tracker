@@ -26,6 +26,8 @@ import urllib.request
 from datetime import datetime
 from pathlib import Path
 
+from utils import BUSCO_HEADER, LOG_HEADER
+
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
@@ -101,14 +103,14 @@ def parse_busco_results(busco_output_dir):
 
     content = summary_file.read_text()
 
-    results: dict[str, str | float | int] = {
+    results: dict[str, str | float | int | None] = {
         "lineage": "",
-        "busco_count": "NA",
-        "complete": "NA",
-        "single": "NA",
-        "duplicated": "NA",
-        "fragmented": "NA",
-        "missing": "NA",
+        "busco_count": None,
+        "complete": None,
+        "single": None,
+        "duplicated": None,
+        "fragmented": None,
+        "missing": None,
     }
 
     lineage_match = re.search(r"lineage dataset is: (\S+)", content)
@@ -145,28 +147,17 @@ def append_to_busco_tsv(busco_file, annotation_id, results):
     with open(busco_file, "a", newline="") as f:
         writer = csv.writer(f, delimiter="\t")
         if not file_exists:
-            writer.writerow(
-                [
-                    "annotation_id",
-                    "lineage",
-                    "busco_count",
-                    "complete",
-                    "single",
-                    "duplicated",
-                    "fragmented",
-                    "missing",
-                ]
-            )
+            writer.writerow(BUSCO_HEADER)
         writer.writerow(
             [
                 annotation_id,
                 results["lineage"],
-                results["busco_count"],
-                results["complete"],
-                results["single"],
-                results["duplicated"],
-                results["fragmented"],
-                results["missing"],
+                results["busco_count"] if results["busco_count"] is not None else "NA",
+                results["complete"] if results["complete"] is not None else "NA",
+                results["single"] if results["single"] is not None else "NA",
+                results["duplicated"] if results["duplicated"] is not None else "NA",
+                results["fragmented"] if results["fragmented"] is not None else "NA",
+                results["missing"] if results["missing"] is not None else "NA",
             ]
         )
 
@@ -186,7 +177,7 @@ def append_to_log_tsv(log_file, annotation_id, result, step):
     with open(log_file, "a", newline="") as f:
         writer = csv.writer(f, delimiter="\t")
         if not file_exists:
-            writer.writerow(["annotation_id", "run_at", "result", "step"])
+            writer.writerow(LOG_HEADER)
         writer.writerow([annotation_id, run_at, result, step])
 
 
