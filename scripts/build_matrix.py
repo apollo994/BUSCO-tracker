@@ -54,6 +54,20 @@ def load_ids(tsv_path, column='annotation_id'):
     return ids
 
 
+def load_failed_ids(tsv_path):
+    """Return set of annotation_ids whose result == 'fail' in log.tsv."""
+    p = Path(tsv_path)
+    if not p.exists():
+        return set()
+    ids = set()
+    with open(p, newline='') as f:
+        reader = csv.DictReader(f, delimiter='\t')
+        for row in reader:
+            if row.get('result') == 'fail' and row.get('annotation_id'):
+                ids.add(row['annotation_id'])
+    return ids
+
+
 def write_output(key, value):
     """Write a key=value pair to $GITHUB_OUTPUT or stdout."""
     github_output = os.environ.get('GITHUB_OUTPUT')
@@ -73,6 +87,8 @@ def main():
                         help='Maximum number of matrix chunks (default: 256)')
     parser.add_argument('--max-per-job', type=int, default=None,
                         help='Maximum annotations per job; limits total processed per trigger')
+    parser.add_argument('--retry-failed', action='store_true',
+                        help='Re-run annotations that previously failed instead of new pending ones')
     args = parser.parse_args()
 
     all_ids      = load_ids(args.annotations_tsv)
@@ -87,7 +103,12 @@ def main():
         write_output('pending_count', '0')
         return
     logged_ids   = load_ids(args.log_tsv)
-    pending_ids  = all_ids - logged_ids
+
+    if args.retry_failed:
+        pending_ids = load_failed_ids(args.log_tsv)
+        logger.info(f"Retry mode: targeting {len(pending_ids)} previously failed annotations")
+    else:
+        pending_ids  = all_ids - logged_ids
 
     logger.info(f"Total annotations : {len(all_ids)}")
     logger.info(f"Already logged    : {len(logged_ids)}")

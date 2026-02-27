@@ -53,6 +53,20 @@ def load_ids(tsv_path):
     return ids
 
 
+def load_failed_ids(tsv_path):
+    """Return set of annotation_ids whose result == 'fail' in log.tsv."""
+    p = Path(tsv_path)
+    if not p.exists():
+        return set()
+    ids = set()
+    with open(p, newline='') as f:
+        reader = csv.DictReader(f, delimiter='\t')
+        for row in reader:
+            if row.get('result') == 'fail' and row.get('annotation_id'):
+                ids.add(row['annotation_id'])
+    return ids
+
+
 def load_annotations(tsv_path):
     """Return dict of annotation_id → {annotation_url, assembly_url}."""
     annotations = {}
@@ -72,9 +86,9 @@ def load_annotations(tsv_path):
 
 
 def main():
-    if len(sys.argv) not in (6, 7):
+    if len(sys.argv) not in (6, 7, 8):
         print("Usage: python run_busco_batch.py "
-              "<annotations_tsv> <log_tsv> <chunk_index> <chunk_count> <output_dir> [max_per_job]")
+              "<annotations_tsv> <log_tsv> <chunk_index> <chunk_count> <output_dir> [max_per_job] [--retry-failed]")
         sys.exit(1)
 
     annotations_tsv = sys.argv[1]
@@ -82,13 +96,23 @@ def main():
     chunk_index     = int(sys.argv[3])
     chunk_count     = int(sys.argv[4])
     output_dir      = Path(sys.argv[5])
-    max_per_job     = int(sys.argv[6]) if len(sys.argv) == 7 else None
+    max_per_job     = None
+    retry_failed    = False
+    for arg in sys.argv[6:]:
+        if arg == '--retry-failed':
+            retry_failed = True
+        else:
+            max_per_job = int(arg)
 
     output_dir.mkdir(parents=True, exist_ok=True)
 
     annotations  = load_annotations(annotations_tsv)
-    logged_ids   = load_ids(log_tsv)
-    pending_ids  = sorted(set(annotations.keys()) - logged_ids)  # sorted for determinism
+    if retry_failed:
+        pending_ids = sorted(load_failed_ids(log_tsv))
+        logger.info(f"Retry mode: targeting {len(pending_ids)} previously failed annotations")
+    else:
+        logged_ids  = load_ids(log_tsv)
+        pending_ids = sorted(set(annotations.keys()) - logged_ids)  # sorted for determinism
 
     my_slice = pending_ids[chunk_index::chunk_count]
     if max_per_job is not None:

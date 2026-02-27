@@ -7,6 +7,14 @@ on:
         description: 'Max annotations per matrix job (keep low to stay within 6h job limit)'
         required: false
         default: '10'
+      retry_failed:
+        description: 'Re-run previously failed annotations instead of new pending ones'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'false'
+          - 'true'
 
 permissions:
   contents: write
@@ -34,7 +42,12 @@ jobs:
 
       - name: Build matrix
         id: build
-        run: python scripts/build_matrix.py annotations.tsv BUSCO/eukaryota_odb12/log.tsv --max-per-job ${{ github.event.inputs.max_per_job }}
+        run: |
+          RETRY_FLAG=""
+          if [ "${{ github.event.inputs.retry_failed }}" = "true" ]; then
+            RETRY_FLAG="--retry-failed"
+          fi
+          python scripts/build_matrix.py annotations.tsv BUSCO/eukaryota_odb12/log.tsv --max-per-job ${{ github.event.inputs.max_per_job }} $RETRY_FLAG
 
       - name: Summary
         run: |
@@ -97,13 +110,18 @@ jobs:
       - name: Run batch
         shell: bash -el {0}
         run: |
+          RETRY_FLAG=""
+          if [ "${{ github.event.inputs.retry_failed }}" = "true" ]; then
+            RETRY_FLAG="--retry-failed"
+          fi
           python scripts/run_busco_batch.py \
             annotations.tsv \
             BUSCO/eukaryota_odb12/log.tsv \
             ${{ matrix.chunk_index }} \
             ${{ needs.setup.outputs.chunk_count }} \
             batch_output/ \
-            ${{ github.event.inputs.max_per_job }}
+            ${{ github.event.inputs.max_per_job }} \
+            $RETRY_FLAG
 
       - name: Upload batch artifact
         if: always()
@@ -141,7 +159,12 @@ jobs:
           python-version: '3.11'
 
       - name: Aggregate results
-        run: python scripts/aggregate_results.py artifacts/ BUSCO/eukaryota_odb12/BUSCO.tsv BUSCO/eukaryota_odb12/log.tsv
+        run: |
+          RETRY_FLAG=""
+          if [ "${{ github.event.inputs.retry_failed }}" = "true" ]; then
+            RETRY_FLAG="--retry-failed"
+          fi
+          python scripts/aggregate_results.py artifacts/ BUSCO/eukaryota_odb12/BUSCO.tsv BUSCO/eukaryota_odb12/log.tsv $RETRY_FLAG
 
       - name: Display summary
         run: |

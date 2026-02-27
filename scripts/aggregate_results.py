@@ -39,6 +39,36 @@ def load_existing_ids(tsv_path):
     return ids
 
 
+def load_failed_ids(tsv_path):
+    """Return set of annotation_ids whose result == 'fail' in log.tsv."""
+    p = Path(tsv_path)
+    if not p.exists():
+        return set()
+    ids = set()
+    with open(p, newline='') as f:
+        reader = csv.DictReader(f, delimiter='\t')
+        for row in reader:
+            if row.get('result') == 'fail':
+                ids.add(row['annotation_id'])
+    return ids
+
+
+def remove_ids_from_tsv(tsv_path, ids_to_remove):
+    """Rewrite tsv_path keeping only rows whose annotation_id is NOT in ids_to_remove."""
+    p = Path(tsv_path)
+    if not p.exists() or not ids_to_remove:
+        return
+    with open(p, newline='') as f:
+        reader = csv.DictReader(f, delimiter='\t')
+        header = reader.fieldnames
+        rows = [row for row in reader if row['annotation_id'] not in ids_to_remove]
+    with open(p, 'w', newline='') as f:
+        writer = csv.DictWriter(f, fieldnames=header, delimiter='\t')
+        writer.writeheader()
+        writer.writerows(rows)
+    logger.info(f"Removed {len(ids_to_remove)} failed rows from {tsv_path}")
+
+
 def ensure_header(tsv_path, header):
     """Write header if the file does not exist yet."""
     p = Path(tsv_path)
@@ -71,17 +101,25 @@ def read_fragment(fragment_path, expected_header):
 
 
 def main():
-    if len(sys.argv) != 4:
-        print("Usage: python aggregate_results.py <artifacts_dir> <busco_tsv> <log_tsv>")
+    if len(sys.argv) not in (4, 5):
+        print("Usage: python aggregate_results.py <artifacts_dir> <busco_tsv> <log_tsv> [--retry-failed]")
         sys.exit(1)
 
     artifacts_dir = Path(sys.argv[1])
     busco_tsv     = sys.argv[2]
     log_tsv       = sys.argv[3]
+    retry_failed  = '--retry-failed' in sys.argv
 
     if not artifacts_dir.is_dir():
         logger.error(f"Artifacts directory not found: {artifacts_dir}")
         sys.exit(1)
+
+    # In retry mode, remove existing failed log (and busco) rows for IDs being
+    # retried so they can be replaced with fresh results.
+    if retry_failed:
+        retried_ids = load_failed_ids(log_tsv)
+        logger.info(f"Retry mode: removing {len(retried_ids)} failed rows before aggregating")
+        remove_ids_from_tsv(log_tsv, retried_ids)
 
     # Load IDs already committed to avoid duplicates
     existing_busco_ids = load_existing_ids(busco_tsv)
