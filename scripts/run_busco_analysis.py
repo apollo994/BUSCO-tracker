@@ -6,29 +6,30 @@ Downloads annotation and assembly files from URLs, then runs the full
 BUSCO pipeline using the shell scripts.
 
 Usage:
-    python run_busco_analysis.py <annotation_url> <assembly_url> <annotation_id> <busco_tsv> <log_tsv>
+    python run_busco_analysis.py <annotation_url> <assembly_url> <annotation_id> <busco_tsv> <error_log_tsv>
 
 Example:
     python run_busco_analysis.py \\
         https://example.com/annotation.gff.gz \\
         https://example.com/assembly.fna.gz \\
-        ann123 BUSCO.tsv log.tsv
+        ann123 BUSCO.tsv error_log.tsv
 """
-import sys
-import subprocess
 import csv
+import logging
 import re
 import shutil
+import subprocess
+import sys
 import tempfile
-import logging
-import urllib.request
 import urllib.error
-from pathlib import Path
+import urllib.request
 from datetime import datetime
+from pathlib import Path
+
+from utils import BUSCO_HEADER, ERROR_LOG_HEADER
 
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -44,7 +45,7 @@ def download_file(url, dest_path):
     try:
         urllib.request.urlretrieve(url, dest_path)
         logger.info(f"Download complete: {dest_path}")
-        return True, ""
+        return True, "NA"
     except urllib.error.HTTPError as e:
         msg = f"HTTP {e.code} downloading {url}: {e.reason}"
         logger.error(msg)
@@ -102,31 +103,38 @@ def parse_busco_results(busco_output_dir):
 
     content = summary_file.read_text()
 
-    results = {
-        'lineage': '',
-        'busco_count': 0,
-        'complete': 0.0,
-        'single': 0.0,
-        'duplicated': 0.0,
-        'fragmented': 0.0,
-        'missing': 0.0
+    results: dict[str, str | float | int | None] = {
+        "lineage": "",
+        "busco_count": None,
+        "complete": None,
+        "single": None,
+        "duplicated": None,
+        "fragmented": None,
+        "missing": None,
     }
 
-    lineage_match      = re.search(r'lineage dataset is: (\S+)', content)
-    complete_match     = re.search(r'C:(\d+(?:\.\d+)?)%', content)
-    single_match       = re.search(r'S:(\d+(?:\.\d+)?)%', content)
-    duplicated_match   = re.search(r'D:(\d+(?:\.\d+)?)%', content)
-    fragmented_match   = re.search(r'F:(\d+(?:\.\d+)?)%', content)
-    missing_match      = re.search(r'M:(\d+(?:\.\d+)?)%', content)
-    count_match        = re.search(r'(\d+)\s+total BUSCO', content, re.IGNORECASE)
+    lineage_match = re.search(r"lineage dataset is: (\S+)", content)
+    complete_match = re.search(r"C:(\d+(?:\.\d+)?)%", content)
+    single_match = re.search(r"S:(\d+(?:\.\d+)?)%", content)
+    duplicated_match = re.search(r"D:(\d+(?:\.\d+)?)%", content)
+    fragmented_match = re.search(r"F:(\d+(?:\.\d+)?)%", content)
+    missing_match = re.search(r"M:(\d+(?:\.\d+)?)%", content)
+    count_match = re.search(r"(\d+)\s+total BUSCO", content, re.IGNORECASE)
 
-    if lineage_match:    results['lineage']     = lineage_match.group(1)
-    if complete_match:   results['complete']    = float(complete_match.group(1))
-    if single_match:     results['single']      = float(single_match.group(1))
-    if duplicated_match: results['duplicated']  = float(duplicated_match.group(1))
-    if fragmented_match: results['fragmented']  = float(fragmented_match.group(1))
-    if missing_match:    results['missing']     = float(missing_match.group(1))
-    if count_match:      results['busco_count'] = int(count_match.group(1))
+    if lineage_match:
+        results["lineage"] = str(lineage_match.group(1))
+    if complete_match:
+        results["complete"] = float(str(complete_match.group(1)))
+    if single_match:
+        results["single"] = float(str(single_match.group(1)))
+    if duplicated_match:
+        results["duplicated"] = float(str(duplicated_match.group(1)))
+    if fragmented_match:
+        results["fragmented"] = float(str(fragmented_match.group(1)))
+    if missing_match:
+        results["missing"] = float(str(missing_match.group(1)))
+    if count_match:
+        results["busco_count"] = int(str(count_match.group(1)))
 
     logger.info(f"BUSCO results: {results}")
     return results
@@ -136,72 +144,70 @@ def append_to_busco_tsv(busco_file, annotation_id, results):
     """Append successful BUSCO results to BUSCO.tsv."""
     logger.info(f"Writing results for {annotation_id} to {busco_file}")
     file_exists = Path(busco_file).exists()
-    with open(busco_file, 'a', newline='') as f:
-        writer = csv.writer(f, delimiter='\t')
+    with open(busco_file, "a", newline="") as f:
+        writer = csv.writer(f, delimiter="\t")
         if not file_exists:
-            writer.writerow(['annotation_id', 'lineage', 'busco_count', 'complete',
-                             'single', 'duplicated', 'fragmented', 'missing'])
-        writer.writerow([
-            annotation_id,
-            results['lineage'],
-            results['busco_count'],
-            results['complete'],
-            results['single'],
-            results['duplicated'],
-            results['fragmented'],
-            results['missing'],
-        ])
+            writer.writerow(BUSCO_HEADER)
+        writer.writerow(
+            [
+                annotation_id,
+                results["lineage"],
+                results["busco_count"] if results["busco_count"] is not None else "NA",
+                results["complete"] if results["complete"] is not None else "NA",
+                results["single"] if results["single"] is not None else "NA",
+                results["duplicated"] if results["duplicated"] is not None else "NA",
+                results["fragmented"] if results["fragmented"] is not None else "NA",
+                results["missing"] if results["missing"] is not None else "NA",
+            ]
+        )
 
 
-def append_to_log_tsv(log_file, annotation_id, result, step):
-    """
-    Append execution log to log.tsv.
-
-    Args:
-        result: 'success' or 'fail'
-        step:   Failed step name, or 'NA' on success
-    """
-    logger.info(f"Logging {result} for {annotation_id} to {log_file}")
+def append_to_log_tsv(log_file, annotation_id, step):
+    """Append a failed run to error_log.tsv."""
+    logger.info(f"Logging failure for {annotation_id} to {log_file}")
     file_exists = Path(log_file).exists()
-    run_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    with open(log_file, 'a', newline='') as f:
-        writer = csv.writer(f, delimiter='\t')
+    run_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    step = " ".join(step.splitlines()).strip()
+    with open(log_file, "a", newline="") as f:
+        writer = csv.writer(f, delimiter="\t")
         if not file_exists:
-            writer.writerow(['annotation_id', 'run_at', 'result', 'step'])
-        writer.writerow([annotation_id, run_at, result, step])
+            writer.writerow(ERROR_LOG_HEADER)
+        writer.writerow([annotation_id, run_at, step])
 
 
 def main():
     """Main entry point."""
     if len(sys.argv) != 6:
-        print("Usage: python run_busco_analysis.py "
-              "<annotation_url> <assembly_url> <annotation_id> <busco_tsv> <log_tsv>")
+        print(
+            "Usage: python run_busco_analysis.py "
+            "<annotation_url> <assembly_url> <annotation_id> <busco_tsv> <log_tsv>"
+        )
         print()
         print("Arguments:")
         print("  annotation_url - URL to GFF3/GFF annotation file (can be .gz)")
         print("  assembly_url   - URL to FASTA assembly file (can be .gz)")
         print("  annotation_id  - Unique identifier for this annotation")
         print("  busco_tsv      - Path to BUSCO.tsv output file")
-        print("  log_tsv        - Path to log.tsv file")
+        print("  error_log_tsv  - Path to error_log.tsv file")
         sys.exit(1)
 
     annotation_url = sys.argv[1]
-    assembly_url   = sys.argv[2]
-    annotation_id  = sys.argv[3]
-    busco_tsv      = sys.argv[4]
-    log_tsv        = sys.argv[5]
+    assembly_url = sys.argv[2]
+    annotation_id = sys.argv[3]
+    busco_tsv = sys.argv[4]
+    log_tsv = sys.argv[5]  # error_log.tsv
 
     logger.info(f"Starting BUSCO analysis for {annotation_id}")
 
     # Locate shell scripts relative to this file
-    script_dir     = Path(__file__).parent
+    script_dir = Path(__file__).parent
     extract_script = script_dir / "01_extract_proteins.sh"
-    busco_script   = script_dir / "02_run_BUSCO.sh"
+    busco_script = script_dir / "02_run_BUSCO.sh"
 
     for script in (extract_script, busco_script):
         if not script.exists():
             logger.error(f"Required script not found: {script}")
-            append_to_log_tsv(log_tsv, annotation_id, 'fail', 'script_missing')
+            append_to_log_tsv(log_tsv, annotation_id, "script_missing")
             sys.exit(1)
 
     # Work inside a temp directory so downloads don't pollute the repo
@@ -216,50 +222,98 @@ def main():
         logger.info("STEP 1: Download files")
         logger.info("=" * 80)
 
-        gff_file   = work_dir / "annotation.gff.gz"
+        gff_file = work_dir / "annotation.gff.gz"
         fasta_file = work_dir / "assembly.fna.gz"
 
         ok, err = download_file(annotation_url, gff_file)
         if not ok:
-            append_to_log_tsv(log_tsv, annotation_id, 'fail', 'download_annotation')
+            append_to_log_tsv(log_tsv, annotation_id, err)
             sys.exit(1)
 
         ok, err = download_file(assembly_url, fasta_file)
         if not ok:
-            append_to_log_tsv(log_tsv, annotation_id, 'fail', 'download_assembly')
+            append_to_log_tsv(log_tsv, annotation_id, err)
             sys.exit(1)
 
         # ------------------------------------------------------------------
-        # Step 2: Extract proteins
+        # Step 2: Alias sequence IDs
         # ------------------------------------------------------------------
         logger.info("=" * 80)
-        logger.info("STEP 2: Extract proteins")
+        logger.info("STEP 2: Alias sequence IDs (annocli alias)")
         logger.info("=" * 80)
 
-        success, _, _ = run_shell_script(
-            extract_script,
-            [str(gff_file), str(fasta_file)],
-            "extract_proteins"
+        alias_gff_file = work_dir / "annotation.aliasMatch.gff3.gz"
+        cmd = [
+            "annocli",
+            "alias",
+            str(gff_file),
+            str(fasta_file),
+            "--output",
+            str(alias_gff_file),
+        ]
+        logger.info(f"Running alias_ids: {' '.join(cmd)}")
+        try:
+            alias_result = subprocess.run(
+                cmd, capture_output=True, text=True, check=True
+            )
+            logger.info("alias_ids completed successfully")
+            alias_stderr = alias_result.stderr
+        except subprocess.CalledProcessError as e:
+            logger.error(f"alias_ids failed with exit code {e.returncode}")
+            logger.error(f"stdout: {e.stdout}")
+            logger.error(f"stderr: {e.stderr}")
+            append_to_log_tsv(
+                log_tsv, annotation_id, e.stderr if e.stderr else "alias_ids_failed"
+            )
+            sys.exit(1)
+        except FileNotFoundError as e:
+            logger.error("annocli not found")
+            append_to_log_tsv(log_tsv, annotation_id, str(e))
+            sys.exit(1)
+
+        if not alias_gff_file.exists():
+            logger.error(f"Expected aliasMatch file not found: {alias_gff_file}")
+            append_to_log_tsv(
+                log_tsv, annotation_id, alias_stderr if alias_stderr else "alias_output_missing"
+            )
+            sys.exit(1)
+
+        logger.info(f"AliasMatch annotation file: {alias_gff_file}")
+
+        # ------------------------------------------------------------------
+        # Step 3: Extract proteins
+        # ------------------------------------------------------------------
+        logger.info("=" * 80)
+        logger.info("STEP 3: Extract proteins")
+        logger.info("=" * 80)
+
+        success, _, stderr = run_shell_script(
+            extract_script, [str(alias_gff_file), str(fasta_file)], "extract_proteins"
         )
 
         if not success:
-            append_to_log_tsv(log_tsv, annotation_id, 'fail', 'extract_proteins')
+            append_to_log_tsv(
+                log_tsv, annotation_id, stderr if stderr else "extract_proteins_failed"
+            )
             sys.exit(1)
 
         # 01_extract_proteins.sh writes <gff_basename>_proteins.faa next to the gff
-        protein_file = work_dir / "annotation_proteins.faa"
+        # alias_gff_file is annotation.aliasMatch.gff3.gz → basename = annotation.aliasMatch
+        protein_file = work_dir / "annotation.aliasMatch_proteins.faa"
         if not protein_file.exists():
             logger.error(f"Expected protein file not found: {protein_file}")
-            append_to_log_tsv(log_tsv, annotation_id, 'fail', 'extract_proteins')
+            append_to_log_tsv(
+                log_tsv, annotation_id, stderr if stderr else "protein_file_missing"
+            )
             sys.exit(1)
 
         logger.info(f"Protein file: {protein_file}")
 
         # ------------------------------------------------------------------
-        # Step 3: Run BUSCO
+        # Step 4: Run BUSCO
         # ------------------------------------------------------------------
         logger.info("=" * 80)
-        logger.info("STEP 3: Run BUSCO")
+        logger.info("STEP 4: Run BUSCO")
         logger.info("=" * 80)
 
         lineage_candidates = [
@@ -269,33 +323,36 @@ def main():
         ]
         lineage_path = next((p for p in lineage_candidates if p.exists()), None)
         if lineage_path is None:
-            logger.error("Lineage folder not found. Tried: " +
-                         ", ".join(str(p) for p in lineage_candidates))
-            append_to_log_tsv(log_tsv, annotation_id, 'fail', 'lineage_missing')
+            logger.error(
+                "Lineage folder not found. Tried: "
+                + ", ".join(str(p) for p in lineage_candidates)
+            )
+            append_to_log_tsv(log_tsv, annotation_id, "lineage_missing")
             sys.exit(1)
 
         busco_output = str(work_dir / f"busco_{annotation_id}")
 
-        success, _, _ = run_shell_script(
+        success, _, stderr = run_shell_script(
             busco_script,
             [str(protein_file), str(lineage_path), busco_output],
-            "run_busco"
+            "run_busco",
         )
 
         if not success:
-            append_to_log_tsv(log_tsv, annotation_id, 'fail', 'run_busco')
+            append_to_log_tsv(
+                log_tsv, annotation_id, stderr if stderr else "busco_failed"
+            )
             sys.exit(1)
 
         # ------------------------------------------------------------------
-        # Step 4: Parse and record results
+        # Step 5: Parse and record results
         # ------------------------------------------------------------------
         logger.info("=" * 80)
-        logger.info("STEP 4: Parse BUSCO results")
+        logger.info("STEP 5: Parse BUSCO results")
         logger.info("=" * 80)
 
         results = parse_busco_results(busco_output)
         append_to_busco_tsv(busco_tsv, annotation_id, results)
-        append_to_log_tsv(log_tsv, annotation_id, 'success', 'NA')
 
         logger.info("=" * 80)
         logger.info(f"✓ Successfully completed BUSCO analysis for {annotation_id}")
@@ -305,7 +362,7 @@ def main():
 
     except Exception as e:
         logger.error(f"Unexpected error: {e}")
-        append_to_log_tsv(log_tsv, annotation_id, 'fail', 'unexpected_error')
+        append_to_log_tsv(log_tsv, annotation_id, "unexpected_error")
         sys.exit(1)
 
     finally:
@@ -315,4 +372,3 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
-

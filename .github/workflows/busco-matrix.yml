@@ -34,7 +34,7 @@ jobs:
 
       - name: Build matrix
         id: build
-        run: python scripts/build_matrix.py annotations.tsv log.tsv --max-per-job ${{ github.event.inputs.max_per_job }}
+        run: python scripts/build_matrix.py annotations.tsv BUSCO/eukaryota_odb12/BUSCO.tsv BUSCO/eukaryota_odb12/error_log.tsv --max-per-job ${{ github.event.inputs.max_per_job }}
 
       - name: Summary
         run: |
@@ -63,31 +63,44 @@ jobs:
       - name: Set up Conda
         uses: conda-incubator/setup-miniconda@v3
         with:
-          auto-update-conda: true
+          auto-update-conda: false
           python-version: '3.11'
           miniforge-version: latest
           channels: conda-forge,bioconda
           channel-priority: strict
           use-mamba: true
+          conda-remove-defaults: true
+          activate-environment: busco-env
 
-      - name: Install AGAT and BUSCO
+      - name: Cache conda environment
+        id: conda-cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.CONDA }}/envs/busco-env
+          key: conda-${{ runner.os }}-busco6.0.0-gffread0.12.07-annocli1.0.0
+
+      - name: Install BUSCO and gffread
+        if: steps.conda-cache.outputs.cache-hit != 'true'
         shell: bash -el {0}
         run: |
           mamba install -y -c conda-forge -c bioconda \
-            "agat==1.6.1" \
-            "busco==6.0.0"
+            "busco==6.0.0" \
+            "gffread==0.12.7"
 
       - name: Install annocli
+        if: steps.conda-cache.outputs.cache-hit != 'true'
+        shell: bash -el {0}
         run: |
-          git clone https://github.com/apollo994/annocli.git
-          pip install -e annocli/
+          git clone --branch v1.0.0 --depth 1 https://github.com/apollo994/annocli.git
+          pip install ./annocli/
 
       - name: Run batch
         shell: bash -el {0}
         run: |
           python scripts/run_busco_batch.py \
             annotations.tsv \
-            log.tsv \
+            BUSCO/eukaryota_odb12/BUSCO.tsv \
+            BUSCO/eukaryota_odb12/error_log.tsv \
             ${{ matrix.chunk_index }} \
             ${{ needs.setup.outputs.chunk_count }} \
             batch_output/ \
@@ -103,7 +116,7 @@ jobs:
           overwrite: true
 
   # ─────────────────────────────────────────────────────────────────────────────
-  # JOB 3: Aggregate all artifacts into BUSCO.tsv and log.tsv
+  # JOB 3: Aggregate all artifacts into BUSCO.tsv and error_log.tsv
   # ─────────────────────────────────────────────────────────────────────────────
   aggregate:
     needs: [setup, busco]
@@ -129,21 +142,21 @@ jobs:
           python-version: '3.11'
 
       - name: Aggregate results
-        run: python scripts/aggregate_results.py artifacts/ BUSCO.tsv log.tsv
+        run: python scripts/aggregate_results.py artifacts/ BUSCO/eukaryota_odb12/BUSCO.tsv BUSCO/eukaryota_odb12/error_log.tsv
 
       - name: Display summary
         run: |
           echo "=== BUSCO.tsv — last 10 rows ==="
-          tail -n 10 BUSCO.tsv
+          tail -n 10 BUSCO/eukaryota_odb12/BUSCO.tsv
           echo ""
-          echo "=== log.tsv — last 10 rows ==="
-          tail -n 10 log.tsv
+          echo "=== error_log.tsv — last 10 rows ==="
+          tail -n 10 BUSCO/eukaryota_odb12/error_log.tsv
 
       - name: Commit and push
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add BUSCO.tsv log.tsv
+          git add BUSCO/eukaryota_odb12/BUSCO.tsv BUSCO/eukaryota_odb12/error_log.tsv
           if git diff --staged --quiet; then
             echo "No new results to commit"
           else

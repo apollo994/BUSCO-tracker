@@ -33,6 +33,7 @@ GFF_BASENAME=$(basename "$GFF_BASENAME" .gff)
 
 # Decompress files if needed
 WORK_DIR=$(mktemp -d)
+trap 'rm -rf "$WORK_DIR"' EXIT
 echo "[$(date +"%Y-%m-%d %H:%M:%S")] Working directory: $WORK_DIR"
 
 if [[ "$GFF_INPUT" == *.gz ]]; then
@@ -53,22 +54,24 @@ else
     FASTA_FILE="$WORK_DIR/input.fna"
 fi
 
-# Step 1: Extract longest isoforms
-echo "[$(date +"%Y-%m-%d %H:%M:%S")] Extracting longest isoforms..."
-LONGISOFORM_GFF="$WORK_DIR/${GFF_BASENAME}_longisoforms.gff3"
-agat_sp_keep_longest_isoform.pl \
-    -f "$GFF_FILE" \
-    -o "$LONGISOFORM_GFF"
 
-# Step 2: Extract protein sequences
-echo "[$(date +"%Y-%m-%d %H:%M:%S")] Extracting protein sequences..."
+echo "[$(date +"%Y-%m-%d %H:%M:%S")] Removing MT chromosomes..."
+NO_MT_GFF_FILE="$INPUT_DIR/${GFF_BASENAME}_no_MT.gff"
+awk '/^#/ || ($1 != "MT" && $1 != "chrM")' "$GFF_FILE" > "$NO_MT_GFF_FILE"
+
+echo "[$(date +"%Y-%m-%d %H:%M:%S")] Extracting aa seqeuences..."
+ALL_PROTEINS_OUTPUT="$INPUT_DIR/${GFF_BASENAME}_ALL_proteins.faa"
+gffread -g "$FASTA_FILE" -y "$ALL_PROTEINS_OUTPUT" "$NO_MT_GFF_FILE"
+
+echo "[$(date +"%Y-%m-%d %H:%M:%S")] Extracting longest isoforms..."
 PROTEIN_OUTPUT="$INPUT_DIR/${GFF_BASENAME}_proteins.faa"
-agat_sp_extract_sequences.pl \
-    -f "$FASTA_FILE" \
-    -g "$LONGISOFORM_GFF" \
-    -t CDS \
-    -p \
-    -o "$PROTEIN_OUTPUT"
+SCRIPT_DIR=$(dirname "$(realpath "$0")")
+awk -f "$SCRIPT_DIR/longest_transcript_per_gene.awk" "$NO_MT_GFF_FILE" "$ALL_PROTEINS_OUTPUT" > "$PROTEIN_OUTPUT"
+
+if [ ! -s "${PROTEIN_OUTPUT}" ]; then
+    echo "Error: Protein file ${PROTEIN_OUTPUT} is empty"
+    exit 1
+fi
 
 # Clean up temporary files
 echo "[$(date +"%Y-%m-%d %H:%M:%S")] Cleaning up temporary files..."

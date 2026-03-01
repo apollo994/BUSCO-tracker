@@ -2,94 +2,37 @@
 
 ## Project Overview
 
-BUSCO-tracker is a GitHub Actions-based automation that performs BUSCO (Benchmarking Universal Single-Copy Orthologs) analysis for eukaryotic genome annotations. It generates TSV output files consumed by downstream applications.
-
-**Core Function**: Automate BUSCO analysis on genome annotation files and output structured results in TSV format for external consumption.
+BUSCO-tracker runs BUSCO (Benchmarking Universal Single-Copy Orthologs) analysis on eukaryotic genome annotations via GitHub Actions. It fetches annotations from the AnnoTrEive API, runs BUSCO protein-mode analysis in parallel matrix jobs, and stores results in TSV files committed back to the repository.
 
 ## Architecture
 
-### GitHub Actions Workflow
-- Main workflow triggers on genome annotation file updates or manual dispatch
-- Python scripts orchestrate BUSCO execution and result parsing
-- TSV output is generated as a workflow artifact and/or committed to repository
-- Workflow should be idempotent and handle incremental updates
+Three manually-triggered (`workflow_dispatch`) GitHub Actions workflows form a pipeline:
 
-### Data Flow
-1. Input: Genome annotation files (FASTA, GFF, etc.)
-2. Process: BUSCO analysis execution via Python wrapper
-3. Output: TSV file with standardized BUSCO metrics (completeness, fragmentation, duplication)
+1. **fetch-annotations.yml** → runs `scripts/fetch_annotations.py` to pull annotation+assembly URLs from the AnnoTrEive API into `annotations.tsv` (columns: `annotation_id`, `annotation_url`, `assembly_url`).
 
-### Key Components
-- `.github/workflows/`: GitHub Actions workflow definitions
-- Python scripts: BUSCO execution wrappers, result parsers, TSV generators
-- Configuration: BUSCO lineage datasets, thresholds, output formats
+2. **busco-matrix.yml** — the main workflow with three jobs:
+   - **setup** → `scripts/build_matrix.py` reads `annotations.tsv`, `BUSCO/eukaryota_odb12/BUSCO.tsv`, and `BUSCO/eukaryota_odb12/error_log.tsv` to find pending annotations (never-run first, then failed retries). Emits a JSON matrix of chunk indices.
+   - **busco** → parallel matrix jobs (up to 256). Each runs `scripts/run_busco_batch.py` which strides over the pending list (`pending[chunk_index::chunk_count]`) and calls `scripts/run_busco_analysis.py` per annotation. Each annotation produces a `result_<id>.tsv` or `log_<id>.tsv` fragment.
+   - **aggregate** → `scripts/aggregate_results.py` merges fragments into `BUSCO/eukaryota_odb12/BUSCO.tsv` and `BUSCO/eukaryota_odb12/error_log.tsv`, deduplicating by annotation_id. Commits results.
 
-## Development Commands
+3. **aggregate-results.yml** — standalone re-aggregation from a previous run's artifacts (takes a `run_id` input).
 
-### Python Environment
-```bash
-# Setup (when environment management is added)
-python -m venv venv
-source venv/bin/activate  # or `venv\Scripts\activate` on Windows
-pip install -r requirements.txt
+### Per-annotation pipeline (`run_busco_analysis.py`)
 
-# Testing (when tests are added)
-pytest tests/
-pytest tests/test_specific.py  # single test file
-pytest tests/test_specific.py::test_function  # single test
+Each annotation goes through: download GFF+FASTA → `annocli alias` (sequence ID aliasing) → `01_extract_proteins.sh` (gffread + longest-isoform AWK filter) → `02_run_BUSCO.sh` (BUSCO protein mode, offline, 4 CPUs) → parse `short_summary.*.txt` → write result/error fragment TSV.
 
-# Linting (when configured)
-black .  # format code
-flake8 .  # check style
-mypy .  # type checking
-```
+### Key data files
 
-### GitHub Actions Testing
-```bash
-# Validate workflow syntax
-act --list  # requires nektos/act for local workflow testing
-
-# Test workflow locally (if act is installed)
-act -j busco-analysis
-```
+- `annotations.tsv` — input registry of all annotations (auto-generated from API)
+- `BUSCO/eukaryota_odb12/BUSCO.tsv` — successful results (columns: `annotation_id`, `lineage`, `busco_count`, `complete`, `single`, `duplicated`, `fragmented`, `missing`)
+- `BUSCO/eukaryota_odb12/error_log.tsv` — failure log (columns: `annotation_id`, `run_at`, `step`)
 
 ## Key Conventions
 
-### BUSCO-Specific Patterns
-- **Lineage Datasets**: Store lineage dataset names in configuration (e.g., `eukaryota_odb10`, `metazoa_odb10`)
-- **Output Parsing**: BUSCO outputs are in `short_summary.*.txt` format - parse these reliably
-- **Error Handling**: BUSCO failures should be caught gracefully; partial results should be logged but not fail the entire workflow
-
-### TSV Output Format
-- **Required Columns**: Maintain consistent column order and naming for downstream consumers
-- **Completeness Metrics**: Include C (complete), S (single-copy), D (duplicated), F (fragmented), M (missing) percentages
-- **Metadata**: Include timestamp, BUSCO version, lineage dataset, input file hash/name
-
-### GitHub Actions Conventions
-- **Artifacts**: Use `actions/upload-artifact@v3` or later for TSV files
-- **Caching**: Cache BUSCO lineage datasets to speed up workflow runs
-- **Secrets**: Never hardcode paths or credentials; use repository secrets and environment variables
-- **Workflow Naming**: Use descriptive job and step names for easy debugging in Actions UI
-
-### Python Code Patterns
-- **Subprocess Management**: Use `subprocess.run()` with proper error handling for BUSCO CLI invocation
-- **Path Handling**: Use `pathlib.Path` for cross-platform compatibility
-- **Configuration**: Load parameters from environment variables (via GitHub Actions) or config files
-- **Logging**: Use `logging` module with appropriate levels (INFO for progress, ERROR for failures)
-
-## Important Notes
-
-### BUSCO Requirements
-- BUSCO v5+ requires specific dependencies (augustus, hmmer, etc.) - document these in Docker/container setup
-- Lineage datasets are large (several GB) - implement caching strategy in workflow
-- BUSCO runs can be time-consuming - consider workflow timeout settings
-
-### Workflow Optimization
-- Run BUSCO in offline mode when possible (pre-download datasets)
-- Parallelize multiple genome analyses if batch processing is needed
-- Consider using matrix strategy for testing multiple lineages
-
-### Output Reliability
-- Validate TSV structure before upload/commit
-- Include schema version in TSV for backward compatibility
-- Log raw BUSCO output alongside parsed TSV for debugging
+- **Shared constants** are in `scripts/utils.py` (`BUSCO_HEADER`, `ERROR_LOG_HEADER`, `load_ids()`, `compute_pending_ids()`). Always import from there rather than redefining.
+- **Batch jobs always exit 0** — per-annotation failures are recorded in error log fragments, not as job failures. This prevents one bad annotation from cancelling parallel jobs (`fail-fast: false`).
+- **Idempotent aggregation** — `aggregate_results.py` deduplicates by `annotation_id` (BUSCO) or `(annotation_id, run_at)` (errors) so re-running is safe.
+- **Conda environment** in CI: BUSCO 6.0.0, gffread 0.12.7, and annocli 1.0.0 are installed via mamba with strict channel priority (conda-forge, bioconda). The env is cached by version key.
+- **Lineage dataset**: `eukaryota_odb12` is used exclusively, running in offline mode. The lineage path resolution tries multiple locations (see `run_busco_analysis.py`).
+- Shell scripts use `set -euo pipefail`. Python scripts use `logging` with INFO level and `pathlib.Path`.
+- Python scripts are run with `python scripts/<name>.py` (no package/module install). Only external dependency is `requests` (for `fetch_annotations.py`).
