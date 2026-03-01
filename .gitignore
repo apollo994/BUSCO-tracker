@@ -1,2 +1,4 @@
 test_data/
 __pycache__
+.virtual_documents/
+analysis/
