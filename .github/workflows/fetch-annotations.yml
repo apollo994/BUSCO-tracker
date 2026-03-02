@@ -40,3 +40,32 @@ jobs:
             git commit -m "Update annotations.tsv - $(date '+%Y-%m-%d %H:%M:%S UTC')"
             git push
           fi
+      
+      - name: Log workflow execution to annotations.log
+        run: |
+          python3 << 'EOF'
+          import csv
+          import subprocess
+          from datetime import datetime
+          
+          timestamp = datetime.utcnow().isoformat() + "Z"
+          
+          # Get diff stats
+          diff_output = subprocess.run(['git', 'diff', 'HEAD~1', 'HEAD', '--numstat', 'annotations.tsv'], 
+                                      capture_output=True, text=True).stdout.strip()
+          if diff_output:
+              parts = diff_output.split('\t')
+              added = parts[0] if len(parts) > 0 else "NA"
+              removed = parts[1] if len(parts) > 1 else "NA"
+          else:
+              added = removed = "NA"
+          
+          # Count total lines in annotations.tsv
+          with open('annotations.tsv', 'r') as f:
+              total = sum(1 for _ in f) - 1  # Exclude header
+          
+          # Append to log
+          with open('logs/annotations.log', 'a', newline='') as f:
+              writer = csv.writer(f, delimiter='\t')
+              writer.writerow([timestamp, added, removed, total])
+          EOF
