@@ -32,7 +32,8 @@ jobs:
           cd scripts
           python triage_errors.py \
             ../BUSCO/eukaryota_odb12/error_log.tsv \
-            ../BUSCO/eukaryota_odb12/giveup.log
+            ../BUSCO/eukaryota_odb12/giveup.log \
+            ../BUSCO/eukaryota_odb12/BUSCO.tsv
 
       - name: Commit and push
         run: |

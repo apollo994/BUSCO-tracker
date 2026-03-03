@@ -3,11 +3,12 @@
 Triage error_log entries: give up on annotations that have failed more than once.
 
 Reads error_log.tsv, groups rows by annotation_id, and:
+  - already in BUSCO.tsv → remove from error_log.tsv (succeeded on retry)
   - count == 1  → keep in error_log.tsv  (will be retried once more)
   - count  > 1  → append to giveup.log and remove from error_log.tsv
 
 Usage:
-    python triage_errors.py <error_log_tsv> <giveup_tsv>
+    python triage_errors.py <error_log_tsv> <giveup_tsv> <busco_tsv>
 """
 import csv
 import logging
@@ -15,7 +16,7 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
-from utils import GIVEUP_HEADER, ERROR_LOG_HEADER
+from utils import GIVEUP_HEADER, ERROR_LOG_HEADER, load_ids
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
@@ -44,12 +45,13 @@ def ensure_header(tsv_path, header):
 
 
 def main():
-    if len(sys.argv) != 3:
-        print("Usage: python triage_errors.py <error_log_tsv> <giveup_tsv>")
+    if len(sys.argv) != 4:
+        print("Usage: python triage_errors.py <error_log_tsv> <giveup_tsv> <busco_tsv>")
         sys.exit(1)
 
     error_log_tsv = sys.argv[1]
     giveup_tsv    = sys.argv[2]
+    busco_tsv     = sys.argv[3]
 
     error_path = Path(error_log_tsv)
     if not error_path.exists():
@@ -69,7 +71,14 @@ def main():
         logger.info("error_log.tsv is empty — nothing to triage")
         return
 
-    # Partition: keep (count == 1) vs giveup (count > 1)
+    # Remove entries for annotations that have since succeeded
+    success_ids = load_ids(busco_tsv)
+    resolved = {aid for aid in groups if aid in success_ids}
+    for aid in resolved:
+        logger.info(f"  Resolved (now in BUSCO.tsv): {aid}")
+        del groups[aid]
+
+    # Partition remaining: keep (count == 1) vs giveup (count > 1)
     keep_rows   = []
     giveup_rows = []
     for aid, rows in groups.items():
@@ -79,7 +88,8 @@ def main():
         else:
             keep_rows.extend(rows)
 
-    logger.info(f"Triage: {len(keep_rows)} rows kept, "
+    logger.info(f"Triage: {len(resolved)} resolved (succeeded on retry), "
+                f"{len(keep_rows)} rows kept, "
                 f"{len(giveup_rows)} rows moved to giveup.log "
                 f"({len(groups) - len(keep_rows)} annotations given up)")
 
