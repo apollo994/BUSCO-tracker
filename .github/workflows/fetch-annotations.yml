@@ -36,7 +36,11 @@ jobs:
           git add annotations.tsv
           if git diff --staged --quiet; then
             echo "No changes to commit"
+            echo '{"added":"0","removed":"0"}' > /tmp/diff_stats.json
           else
+            ADDED=$(git diff --staged --numstat annotations.tsv | awk '{print $1}')
+            REMOVED=$(git diff --staged --numstat annotations.tsv | awk '{print $2}')
+            echo "{\"added\":\"${ADDED:-0}\",\"removed\":\"${REMOVED:-0}\"}" > /tmp/diff_stats.json
             git commit -m "Update annotations.tsv - $(date '+%Y-%m-%d %H:%M:%S UTC')"
             git push
           fi
@@ -45,20 +49,16 @@ jobs:
         run: |
           python3 << 'EOF'
           import csv
-          import subprocess
+          import json
           from datetime import datetime
           
           timestamp = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
           
-          # Get diff stats
-          diff_output = subprocess.run(['git', 'diff', 'HEAD~1', 'HEAD', '--numstat', 'annotations.tsv'], 
-                                      capture_output=True, text=True).stdout.strip()
-          if diff_output:
-              parts = diff_output.split('\t')
-              added = parts[0] if len(parts) > 0 else "NA"
-              removed = parts[1] if len(parts) > 1 else "NA"
-          else:
-              added = removed = "NA"
+          # Read diff stats captured before commit
+          with open('/tmp/diff_stats.json') as f:
+              stats = json.load(f)
+          added = stats.get('added', 'NA')
+          removed = stats.get('removed', 'NA')
           
           # Count total lines in annotations.tsv
           with open('annotations.tsv', 'r') as f:
