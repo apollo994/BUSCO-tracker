@@ -7,11 +7,13 @@ on:
         description: 'Max annotations per matrix job (keep low to stay within 6h job limit)'
         required: false
         default: '10'
-  push:
+  workflow_run:
+    workflows:
+      - "Fetch Annotations"
+    types:
+      - completed
     branches:
-      - automation
-    paths:
-      - 'annotations.tsv'
+      - main
 
 permissions:
   contents: write
