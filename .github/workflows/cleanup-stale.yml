@@ -1,0 +1,99 @@
+name: Cleanup Stale Annotations
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows:
+      - "Fetch Annotations"
+    types:
+      - completed
+    branches:
+      - automation
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    # Only run if the upstream fetch succeeded (skip on cancellation/failure)
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Remove stale annotation entries
+        run: |
+          cd scripts
+          python cleanup_stale.py \
+            ../annotations.tsv \
+            ../BUSCO/eukaryota_odb12/BUSCO.tsv \
+            ../BUSCO/eukaryota_odb12/error_log.tsv
+
+      - name: Commit and push
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add BUSCO/eukaryota_odb12/BUSCO.tsv BUSCO/eukaryota_odb12/error_log.tsv
+          if git diff --staged --quiet; then
+            echo "No stale entries found — nothing to commit"
+          else
+            REMOVED_BUSCO=$(git diff --staged BUSCO/eukaryota_odb12/BUSCO.tsv | grep '^-' | grep -v '^---' | wc -l | tr -d ' ')
+            REMOVED_ERRORS=$(git diff --staged BUSCO/eukaryota_odb12/error_log.tsv | grep '^-' | grep -v '^---' | wc -l | tr -d ' ')
+            TIMESTAMP=$(date -u '+%Y-%m-%d %H:%M UTC')
+            git commit -m "Remove stale annotations — ${TIMESTAMP}, -${REMOVED_BUSCO} from BUSCO.tsv, -${REMOVED_ERRORS} from error_log.tsv"
+            git pull --rebase
+            git push
+          fi
+
+      - name: Log cleanup execution to cleanup.log
+        run: |
+          python3 << 'EOF'
+          import csv
+          import subprocess
+          from datetime import datetime
+
+          timestamp = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
+
+          # Get diff stats for each file
+          def get_removed(path):
+              result = subprocess.run(
+                  ['git', 'diff', 'HEAD~1', 'HEAD', '--numstat', path],
+                  capture_output=True, text=True
+              ).stdout.strip()
+              if result:
+                  parts = result.split('\t')
+                  return parts[1] if len(parts) > 1 else '0'
+              return '0'
+
+          removed_busco = get_removed('BUSCO/eukaryota_odb12/BUSCO.tsv')
+          removed_errors = get_removed('BUSCO/eukaryota_odb12/error_log.tsv')
+
+          # Count current totals (excluding header)
+          def count_lines(path):
+              try:
+                  with open(path) as f:
+                      return sum(1 for _ in f) - 1
+              except FileNotFoundError:
+                  return 0
+
+          total_busco = count_lines('BUSCO/eukaryota_odb12/BUSCO.tsv')
+          total_errors = count_lines('BUSCO/eukaryota_odb12/error_log.tsv')
+
+          with open('logs/cleanup.log', 'a') as f:
+              writer = csv.writer(f, delimiter='\t', lineterminator='\n')
+              writer.writerow([timestamp, removed_busco, removed_errors, total_busco, total_errors])
+          EOF
+          git add logs/cleanup.log
+          if git diff --staged --quiet; then
+            echo "No log changes to commit"
+          else
+            git commit -m "Update cleanup.log - $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+            git push
+          fi

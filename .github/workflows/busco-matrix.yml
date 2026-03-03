@@ -9,7 +9,7 @@ on:
         default: '10'
   workflow_run:
     workflows:
-      - "Fetch Annotations"
+      - "Cleanup Stale Annotations"
     types:
       - completed
     branches:
@@ -25,6 +25,7 @@ jobs:
   # ─────────────────────────────────────────────────────────────────────────────
   setup:
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     outputs:
       matrix:        ${{ steps.build.outputs.matrix }}
       chunk_count:   ${{ steps.build.outputs.chunk_count }}

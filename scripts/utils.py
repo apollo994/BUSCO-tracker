@@ -14,7 +14,7 @@ ERROR_LOG_HEADER = ['annotation_id', 'run_at', 'step']
 def compute_pending_ids(all_ids, success_ids, error_ids):
     """Return pending IDs in priority order: never-run first, then failed retries."""
     never_run = all_ids - success_ids - error_ids
-    failed    = error_ids - success_ids
+    failed    = (error_ids - success_ids) & all_ids
     return sorted(never_run) + sorted(failed)
 
 

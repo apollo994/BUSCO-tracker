@@ -70,7 +70,7 @@ def main():
 
     pending_ids = compute_pending_ids(all_ids, success_ids, error_ids)
     never_run   = all_ids - success_ids - error_ids
-    failed      = error_ids - success_ids
+    failed      = (error_ids - success_ids) & all_ids
 
     logger.info(f"Total annotations : {len(all_ids)}")
     logger.info(f"Successful        : {len(success_ids)}")
