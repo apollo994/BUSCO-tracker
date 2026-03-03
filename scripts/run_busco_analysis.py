@@ -145,7 +145,7 @@ def append_to_busco_tsv(busco_file, annotation_id, results):
     logger.info(f"Writing results for {annotation_id} to {busco_file}")
     file_exists = Path(busco_file).exists()
     with open(busco_file, "a", newline="") as f:
-        writer = csv.writer(f, delimiter="\t")
+        writer = csv.writer(f, delimiter="\t", lineterminator="\n")
         if not file_exists:
             writer.writerow(BUSCO_HEADER)
         writer.writerow(
@@ -169,7 +169,7 @@ def append_to_log_tsv(log_file, annotation_id, step):
     run_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     step = " ".join(step.splitlines()).strip()
     with open(log_file, "a", newline="") as f:
-        writer = csv.writer(f, delimiter="\t")
+        writer = csv.writer(f, delimiter="\t", lineterminator="\n")
         if not file_exists:
             writer.writerow(ERROR_LOG_HEADER)
         writer.writerow([annotation_id, run_at, step])

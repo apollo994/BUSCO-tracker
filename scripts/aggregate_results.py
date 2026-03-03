@@ -58,7 +58,7 @@ def ensure_header(tsv_path, header):
     p = Path(tsv_path)
     if not p.exists():
         with open(p, 'w', newline='') as f:
-            csv.writer(f, delimiter='\t').writerow(header)
+            csv.writer(f, delimiter='\t', lineterminator='\n').writerow(header)
 
 
 def append_rows(tsv_path, rows):
@@ -66,7 +66,7 @@ def append_rows(tsv_path, rows):
     if not rows:
         return
     with open(tsv_path, 'a', newline='') as f:
-        writer = csv.DictWriter(f, fieldnames=rows[0].keys(), delimiter='\t')
+        writer = csv.DictWriter(f, fieldnames=rows[0].keys(), delimiter='\t', lineterminator='\n')
         writer.writerows(rows)
 
 

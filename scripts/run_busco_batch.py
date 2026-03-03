@@ -113,7 +113,7 @@ def main():
             # and the annotation is not silently rescheduled
             try:
                 with open(log_fragment, 'w', newline='') as lf:
-                    w = csv.writer(lf, delimiter='\t')
+                    w = csv.writer(lf, delimiter='\t', lineterminator='\n')
                     w.writerow(ERROR_LOG_HEADER)
                     w.writerow([annotation_id,
                                 datetime.now().strftime('%Y-%m-%d %H:%M:%S'),

@@ -1,4 +1,5 @@
 annotation_id	lineage	busco_count	complete	single	duplicated	fragmented	missing
+00f4a754d9196af64ee3f549615df3b1	eukaryota_odb12	129	95.3	90.7	4.7	3.9	0.8
 00f4a754d9196af64ee3f549615df3b4	eukaryota_odb12	129	95.3	90.7	4.7	3.9	0.8
 1d117de49b45662a3dbcd69be107606d	eukaryota_odb12	129	97.7	93.8	3.9	0.8	1.6
 32d9236a08791382243c9bde2de37850	eukaryota_odb12	129	96.9	96.9	0.0	1.6	1.6
@@ -843,7 +844,10 @@ dc9038a301b7cc2bf44aa3834dddf28a	eukaryota_odb12	129	93.8	89.1	4.7	3.9	2.3
 e0caa9dc219bb5c7ec923b120f84cc5b	eukaryota_odb12	129	93.0	89.9	3.1	3.1	3.9
 e51dbd63b067d0e2308cf76ec2c80308	eukaryota_odb12	129	57.4	54.3	3.1	12.4	30.2
 e9a470553c70700c228036969c180db6	eukaryota_odb12	129	96.9	96.1	0.8	0.0	3.1
+<<<<<<< Updated upstream
 f628158077010762f66c13935b5630a3	eukaryota_odb12	129	99.2	97.7	1.6	0.0	0.8
+=======
+>>>>>>> Stashed changes
 fa2085b2c98a0375cbd3806297dd8a13	eukaryota_odb12	129	98.4	98.4	0.0	1.6	0.0
 01ed7b2f6538dd5238a072ded4a02e86	eukaryota_odb12	129	95.3	95.3	0.0	3.1	1.6
 074d3502e0e4dd11282b9a7a7f7a32e8	eukaryota_odb12	129	92.2	91.5	0.8	1.6	6.2
@@ -4497,7 +4501,10 @@ ff60ac708df63481a6bbe36de919071a	eukaryota_odb12	129	98.4	8.5	89.9	0.8	0.8
 478dab2ce28e08f2166f5aa9a667a555	eukaryota_odb12	129	96.9	96.9	0.0	2.3	0.8
 4c1bf03500ac6edb28016307d98d652a	eukaryota_odb12	129	97.7	96.9	0.8	0.8	1.6
 50cd9fa9872fca8eb3106f670bc468b9	eukaryota_odb12	129	94.6	94.6	0.0	2.3	3.1
+<<<<<<< Updated upstream
 55282f7d773c9ab9481833e227ef9180	eukaryota_odb12	129	97.7	96.9	0.8	2.3	0.0
+=======
+>>>>>>> Stashed changes
 5940fb85d1ecdbb549541a77bcfac651	eukaryota_odb12	129	95.3	85.3	10.1	3.1	1.6
 5db41d7a336d377319b2171f83c2fb84	eukaryota_odb12	129	96.9	95.3	1.6	3.1	0.0
 61fa972c58cb1e3c046b81c7135f6485	eukaryota_odb12	129	94.6	79.8	14.7	4.7	0.8
@@ -10834,7 +10841,10 @@ fdb44bc79ed0c70e247e7e62375eaeb8	eukaryota_odb12	129	100.0	99.2	0.8	0.0	0.0
 369b4b01df1608f666eca5f5cca11e78	eukaryota_odb12	129	86.8	86.8	0.0	7.8	5.4
 3b47753b8f8116e660a50856a90bb250	eukaryota_odb12	129	98.4	98.4	0.0	1.6	0.0
 400273a3a7fa0faf5df5320bdccf770c	eukaryota_odb12	129	97.7	97.7	0.0	2.3	0.0
+<<<<<<< Updated upstream
 44907b464ec65fc7e1d2161b22b3a493	eukaryota_odb12	129	100.0	98.4	1.6	0.0	0.0
+=======
+>>>>>>> Stashed changes
 494a1f555303b71c2d5aee36e2d511cc	eukaryota_odb12	129	99.2	98.4	0.8	0.0	0.8
 4d97ee2b291db5fb651a8621d2a2c079	eukaryota_odb12	129	85.3	84.5	0.8	7.8	7.0
 52526eba570abced76ab6274cacd26bd	eukaryota_odb12	129	97.7	95.3	2.3	1.6	0.8
@@ -11317,7 +11327,10 @@ fdd349c7a30118fd357bf3369a1a22d1	eukaryota_odb12	129	99.2	99.2	0.0	0.8	0.0
 76c70eadd8b528ca0ab601fa09dc412f	eukaryota_odb12	129	95.3	95.3	0.0	0.8	3.9
 7b2e11b850685fa35eda2fa7125882e9	eukaryota_odb12	129	24.0	23.3	0.8	10.9	65.1
 7fbdde422e67947deaaaf754fea078d9	eukaryota_odb12	129	98.4	98.4	0.0	0.8	0.8
+<<<<<<< Updated upstream
 845380a5a9804cbda0a80e1515e9eec6	eukaryota_odb12	129	98.4	97.7	0.8	1.6	0.0
+=======
+>>>>>>> Stashed changes
 89099edea2730c03918b8ce72e2b6205	eukaryota_odb12	129	100.0	2.3	97.7	0.0	0.0
 8d4828b2c97d6c1228363ea3859708af	eukaryota_odb12	129	98.4	89.9	8.5	0.8	0.8
 9198113cb244cb92842dbc5c81d7f275	eukaryota_odb12	129	89.9	87.6	2.3	5.4	4.7
@@ -13698,7 +13711,10 @@ a4c23b23996cbcb28b012d1637605b18	eukaryota_odb12	129	95.3	93.8	1.6	3.1	1.6
 0f8022fd5f37600b504571414cde5b39	eukaryota_odb12	129	99.2	97.7	1.6	0.8	0.0
 c1fa4fc9c4c2dfd302ccd4ca9974f7af	eukaryota_odb12	129	85.3	84.5	0.8	7.8	7.0
 41ba9d6a8f4a687778e66313dbc69bb7	eukaryota_odb12	129	98.4	93.0	5.4	0.0	1.6
+<<<<<<< Updated upstream
 5a5982d4207be9f7d6bc8457a02b20af	eukaryota_odb12	129	98.4	96.9	1.6	1.6	0.0
+=======
+>>>>>>> Stashed changes
 a53796badf18b356767618ee8ef97127	eukaryota_odb12	129	79.1	69.0	10.1	5.4	15.5
 c21aac184c2695de32fadbde67adf871	eukaryota_odb12	129	97.7	97.7	0.0	1.6	0.8
 f5e38a6bf99db1cd5832963ae6181c02	eukaryota_odb12	129	82.2	81.4	0.8	10.1	7.8

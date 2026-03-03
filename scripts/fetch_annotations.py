@@ -115,7 +115,7 @@ def main():
     # Generate TSV
     output_file = "annotations.tsv"
     with open(output_file, 'w', newline='') as tsvfile:
-        writer = csv.writer(tsvfile, delimiter='\t')
+        writer = csv.writer(tsvfile, delimiter='\t', lineterminator='\n')
         
         # Write header
         writer.writerow(['annotation_id', 'annotation_url', 'assembly_url'])
