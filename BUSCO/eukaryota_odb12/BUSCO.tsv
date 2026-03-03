@@ -1,7 +1,7 @@
 annotation_id	lineage	busco_count	complete	single	duplicated	fragmented	missing
-00f4a754d9196af64ee3f549615df3b4	eukaryota_odb12	129	95.3	90.7	4.7	3.9	0.8
-1d117de49b45662a3dbcd69be107606d	eukaryota_odb12	129	97.7	93.8	3.9	0.8	1.6
-32d9236a08791382243c9bde2de37850	eukaryota_odb12	129	96.9	96.9	0.0	1.6	1.6
+00f4a754d9196af64ee3f549615df3B4	eukaryota_odb12	129	95.3	90.7	4.7	3.9	0.8
+1d117de49b45662a3dbcd69be107606D	eukaryota_odb12	129	97.7	93.8	3.9	0.8	1.6
+32d9236A08791382243c9bde2De37849	eukaryota_odb12	129	96.9	96.9	0.0	1.6	1.6
 581a2c46d4758e7c4f2d77cc650c189d	eukaryota_odb12	129	87.6	86.0	1.6	9.3	3.1
 6f9b67b3af1fca145444f215c489b574	eukaryota_odb12	129	96.9	94.6	2.3	1.6	1.6
 85b39713fa89d05ccadbc0632bbf1f51	eukaryota_odb12	129	92.2	92.2	0.0	4.7	3.1
