@@ -9,7 +9,7 @@ on:
         default: '10'
   push:
     branches:
-      - main
+      - automation
     paths:
       - 'annotations.tsv'
 
