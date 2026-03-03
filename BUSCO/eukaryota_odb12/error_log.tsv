@@ -1101,10 +1101,7 @@ ebedd1586ac9c6e8f53f3765dbc9bcff	2026-02-27 22:28:18	FASTA index file /tmp/tmp.r
 1b36a126d4172656e298f455e0b5d20a	2026-02-27 22:49:49	HTTP 403 downloading https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/947/370/505/GCA_947370505.1_CEI_1a.nuclear_genome/GCA_947370505.1_CEI_1a.nuclear_genome_genomic.fna.gz: Forbidden
 31550d608bc3fc9078e78419ef47511f	2026-02-27 22:55:04	"FASTA index file /tmp/tmp.9ZgbXSiJv4/input.fna.fai created. double free or corruption (!prev) /home/runner/work/BUSCO-tracker/BUSCO-tracker/scripts/01_extract_proteins.sh: line 64:  5508 Aborted                 (core dumped) gffread -g ""$FASTA_FILE"" -y ""$ALL_PROTEINS_OUTPUT"" ""$NO_MT_GFF_FILE"""
 4d4bb690587ae61cbb410005acd4465f	2026-02-27 23:01:58	HTTP 403 downloading https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/025/200/985/GCA_025200985.1_Dgunungcola_SK_2/GCA_025200985.1_Dgunungcola_SK_2_genomic.fna.gz: Forbidden
-<<<<<<< Updated upstream
 5a5982d4207be9f7d6bc8457a02b20af	2026-02-27 23:03:42	HTTP 403 downloading https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/001/624/675/GCA_001624675.1_NOD_ShiLtJ_v1/GCA_001624675.1_NOD_ShiLtJ_v1_genomic.fna.gz: Forbidden
-=======
->>>>>>> Stashed changes
 98b7c24e7215691d60c56ca4ed667460	2026-02-27 23:13:31	FASTA index file /tmp/tmp.Xvz6EwoC4J/input.fna.fai created.
 b2a4fdf0cd8b08e983bf7f0b1e4ce65c	2026-02-27 23:19:34	FASTA index file /tmp/tmp.kwbkEUp7N0/input.fna.fai created. Warning: couldn't find fasta record for 'NC_001665.2'! Error: no genomic sequence available (check -g option!).
 bb3d380cc5525df85e20eab69135e70d	2026-02-27 23:20:44	"FASTA index file /tmp/tmp.UlE1UgNU53/input.fna.fai created. Error parsing strand (?) from GFF line: NC_036100.1	RefSeq	mRNA	69801	139592	.	?	.	ID=rna-CSD74_pgp043;Parent=gene-CSD74_pgp043;Dbxref=GeneID:34730827;exception=trans-splicing;gbkey=mRNA;gene=rps12;locus_tag=CSD74_pgp043"
