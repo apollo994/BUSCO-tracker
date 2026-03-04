@@ -1,0 +1,65 @@
+name: Triage Errors
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows:
+      - "BUSCO Matrix Analysis"
+    types:
+      - completed
+    branches:
+      - main
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Triage error log
+        run: |
+          cd scripts
+          python triage_errors.py \
+            ../BUSCO/eukaryota_odb12/.retry.log \
+            ../BUSCO/eukaryota_odb12/.giveup.log \
+            ../BUSCO/eukaryota_odb12/BUSCO.tsv
+
+      - name: Commit and push
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add BUSCO/eukaryota_odb12/.retry.log BUSCO/eukaryota_odb12/.giveup.log
+          if git diff --staged --quiet; then
+            echo "No annotations to give up on — nothing to commit"
+          else
+            GIVEUP=$(git diff --staged --numstat BUSCO/eukaryota_odb12/.giveup.log | awk '{print $1}')
+            REMOVED=$(git diff --staged --numstat BUSCO/eukaryota_odb12/.retry.log | awk '{print $2}')
+            TIMESTAMP=$(date -u '+%Y-%m-%d %H:%M UTC')
+            git commit -m "Triage errors — ${TIMESTAMP}, +${GIVEUP:-0} giveup rows, -${REMOVED:-0} retry rows"
+            git pull --rebase
+            git push
+          fi
+
+      - name: Trigger retry if errors remain
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          LINES=$(tail -n +2 BUSCO/eukaryota_odb12/.retry.log | wc -l | tr -d ' ')
+          if [ "$LINES" -gt "0" ]; then
+            echo ".retry.log has $LINES entries — triggering BUSCO retry"
+            gh workflow run busco-matrix.yml --ref "${{ github.ref }}"
+          else
+            echo ".retry.log is empty — cycle complete"
+          fi

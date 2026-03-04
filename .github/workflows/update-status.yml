@@ -1,0 +1,73 @@
+name: Update Status
+
+on:
+  schedule:
+    - cron: '0 12 * * 5'  # Every Friday at 12:00 UTC
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  update-status:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      
+      - name: Run check_status.py
+        run: python scripts/check_status.py
+      
+      - name: Update README with latest status
+        run: |
+          # Read the latest status line from .status.log
+          LATEST_STATUS=$(tail -1 BUSCO/eukaryota_odb12/.status.log)
+          
+          # Parse the tab-separated values
+          TIMESTAMP=$(echo "$LATEST_STATUS" | cut -f1)
+          TOTAL=$(echo "$LATEST_STATUS" | cut -f2)
+          BUSCO=$(echo "$LATEST_STATUS" | cut -f3)
+          RETRY=$(echo "$LATEST_STATUS" | cut -f4)
+          GIVEUP=$(echo "$LATEST_STATUS" | cut -f5)
+          
+          # Calculate pending
+          PENDING=$((TOTAL - BUSCO - GIVEUP))
+          
+          # Calculate percentages
+          BUSCO_PCT=$(awk "BEGIN {printf \"%.1f\", ($BUSCO / $TOTAL) * 100}")
+          PENDING_PCT=$(awk "BEGIN {printf \"%.1f\", ($PENDING / $TOTAL) * 100}")
+          GIVEUP_PCT=$(awk "BEGIN {printf \"%.1f\", ($GIVEUP / $TOTAL) * 100}")
+          
+          # Format numbers with commas
+          TOTAL_FMT=$(printf "%'d" $TOTAL)
+          BUSCO_FMT=$(printf "%'d" $BUSCO)
+          PENDING_FMT=$(printf "%'d" $PENDING)
+          GIVEUP_FMT=$(printf "%'d" $GIVEUP)
+          
+          # Update README.md in place using sed
+          sed -i.bak "s/^\*\*Last updated:.*/**Last updated:** $TIMESTAMP/" README.md
+          sed -i.bak "s/| \*\*Total annotations\*\* | [0-9,]* | [0-9.]*% |/| **Total annotations** | $TOTAL_FMT | 100% |/" README.md
+          sed -i.bak "s/| \*\*Has BUSCO values\*\* | [0-9,]* | [0-9.]*% |/| **Has BUSCO values** | $BUSCO_FMT | $BUSCO_PCT% |/" README.md
+          sed -i.bak "s/| \*\*Pending\/Retry\*\* | [0-9,]* | [0-9.]*% |/| **Pending\/Retry** | $PENDING_FMT | $PENDING_PCT% |/" README.md
+          sed -i.bak "s/| \*\*Given up\*\* | [0-9,]* | [0-9.]*% |/| **Given up** | $GIVEUP_FMT | $GIVEUP_PCT% |/" README.md
+          rm -f README.md.bak
+      
+      - name: Commit and push changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          git add BUSCO/eukaryota_odb12/.status.log README.md
+          
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            TIMESTAMP=$(tail -1 BUSCO/eukaryota_odb12/.status.log | cut -f1)
+            git commit -m "Update status — $TIMESTAMP"
+            git push
+          fi

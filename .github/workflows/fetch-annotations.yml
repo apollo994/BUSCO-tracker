@@ -1,6 +1,9 @@
 name: Fetch Annotations
 
 on:
+  schedule:
+    - cron: '0 12 * * 0'  # Weekly on Sunday at 12 PM UTC
+    # - cron: '0 */4 * * *'  # Every 4 hours (testing)
   workflow_dispatch:
 
 permissions:
@@ -26,12 +29,6 @@ jobs:
       - name: Fetch annotations and generate TSV
         run: python scripts/fetch_annotations.py
         
-      - name: Upload TSV artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: annotations-${{ github.run_number }}
-          path: annotations.tsv
-          
       - name: Commit and push TSV file
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
@@ -39,7 +36,12 @@ jobs:
           git add annotations.tsv
           if git diff --staged --quiet; then
             echo "No changes to commit"
+            echo '{"added":"0","removed":"0"}' > /tmp/diff_stats.json
           else
-            git commit -m "Update annotations.tsv"
+            ADDED=$(git diff --staged --numstat annotations.tsv | awk '{print $1}')
+            REMOVED=$(git diff --staged --numstat annotations.tsv | awk '{print $2}')
+            TOTAL=$(tail -n +2 annotations.tsv | wc -l | tr -d ' ')
+            TIMESTAMP=$(date -u '+%Y-%m-%d %H:%M UTC')
+            git commit -m "Fetch annotations — ${TIMESTAMP}, +${ADDED:-0} new, -${REMOVED:-0} removed, ${TOTAL} total"
             git push
           fi

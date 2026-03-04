@@ -1,0 +1,55 @@
+name: Cleanup Stale Annotations
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows:
+      - "Fetch Annotations"
+    types:
+      - completed
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    # Only run if the upstream fetch succeeded (skip on cancellation/failure)
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Remove stale annotation entries
+        run: |
+          cd scripts
+          python cleanup_stale.py \
+            ../annotations.tsv \
+            ../BUSCO/eukaryota_odb12/BUSCO.tsv \
+            ../BUSCO/eukaryota_odb12/.retry.log \
+            ../BUSCO/eukaryota_odb12/.giveup.log
+
+      - name: Commit and push
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add BUSCO/eukaryota_odb12/BUSCO.tsv BUSCO/eukaryota_odb12/.retry.log BUSCO/eukaryota_odb12/.giveup.log
+          if git diff --staged --quiet; then
+            echo "No stale entries found — nothing to commit"
+            echo '{"removed_busco":"0","removed_errors":"0"}' > /tmp/diff_stats.json
+          else
+            REMOVED_BUSCO=$(git diff --staged --numstat BUSCO/eukaryota_odb12/BUSCO.tsv | awk '{print $2}')
+            REMOVED_ERRORS=$(git diff --staged --numstat BUSCO/eukaryota_odb12/.retry.log | awk '{print $2}')
+            TIMESTAMP=$(date -u '+%Y-%m-%d %H:%M UTC')
+            git commit -m "Cleanup stale — ${TIMESTAMP}, -${REMOVED_BUSCO:-0} from BUSCO.tsv, -${REMOVED_ERRORS:-0} from .retry.log"
+            git pull --rebase
+            git push
+          fi

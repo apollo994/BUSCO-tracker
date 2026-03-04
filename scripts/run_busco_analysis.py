@@ -6,13 +6,13 @@ Downloads annotation and assembly files from URLs, then runs the full
 BUSCO pipeline using the shell scripts.
 
 Usage:
-    python run_busco_analysis.py <annotation_url> <assembly_url> <annotation_id> <busco_tsv> <error_log_tsv>
+    python run_busco_analysis.py <annotation_url> <assembly_url> <annotation_id> <busco_tsv> <retry_log>
 
 Example:
     python run_busco_analysis.py \\
         https://example.com/annotation.gff.gz \\
         https://example.com/assembly.fna.gz \\
-        ann123 BUSCO.tsv error_log.tsv
+        ann123 BUSCO.tsv .retry.log
 """
 import csv
 import logging
@@ -26,7 +26,7 @@ import urllib.request
 from datetime import datetime
 from pathlib import Path
 
-from utils import BUSCO_HEADER, ERROR_LOG_HEADER
+from utils import BUSCO_HEADER, RETRY_HEADER
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
@@ -145,7 +145,7 @@ def append_to_busco_tsv(busco_file, annotation_id, results):
     logger.info(f"Writing results for {annotation_id} to {busco_file}")
     file_exists = Path(busco_file).exists()
     with open(busco_file, "a", newline="") as f:
-        writer = csv.writer(f, delimiter="\t")
+        writer = csv.writer(f, delimiter="\t", lineterminator="\n")
         if not file_exists:
             writer.writerow(BUSCO_HEADER)
         writer.writerow(
@@ -162,16 +162,16 @@ def append_to_busco_tsv(busco_file, annotation_id, results):
         )
 
 
-def append_to_log_tsv(log_file, annotation_id, step):
-    """Append a failed run to error_log.tsv."""
-    logger.info(f"Logging failure for {annotation_id} to {log_file}")
-    file_exists = Path(log_file).exists()
+def append_to_retry_log(retry_log, annotation_id, step):
+    """Append a failed run to .retry.log."""
+    logger.info(f"Logging failure for {annotation_id} to {retry_log}")
+    file_exists = Path(retry_log).exists()
     run_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     step = " ".join(step.splitlines()).strip()
-    with open(log_file, "a", newline="") as f:
-        writer = csv.writer(f, delimiter="\t")
+    with open(retry_log, "a", newline="") as f:
+        writer = csv.writer(f, delimiter="\t", lineterminator="\n")
         if not file_exists:
-            writer.writerow(ERROR_LOG_HEADER)
+            writer.writerow(RETRY_HEADER)
         writer.writerow([annotation_id, run_at, step])
 
 
@@ -180,7 +180,7 @@ def main():
     if len(sys.argv) != 6:
         print(
             "Usage: python run_busco_analysis.py "
-            "<annotation_url> <assembly_url> <annotation_id> <busco_tsv> <log_tsv>"
+            "<annotation_url> <assembly_url> <annotation_id> <busco_tsv> <retry_log>"
         )
         print()
         print("Arguments:")
@@ -188,14 +188,14 @@ def main():
         print("  assembly_url   - URL to FASTA assembly file (can be .gz)")
         print("  annotation_id  - Unique identifier for this annotation")
         print("  busco_tsv      - Path to BUSCO.tsv output file")
-        print("  error_log_tsv  - Path to error_log.tsv file")
+        print("  retry_log      - Path to .retry.log file")
         sys.exit(1)
 
     annotation_url = sys.argv[1]
     assembly_url = sys.argv[2]
     annotation_id = sys.argv[3]
     busco_tsv = sys.argv[4]
-    log_tsv = sys.argv[5]  # error_log.tsv
+    retry_log = sys.argv[5]
 
     logger.info(f"Starting BUSCO analysis for {annotation_id}")
 
@@ -207,7 +207,7 @@ def main():
     for script in (extract_script, busco_script):
         if not script.exists():
             logger.error(f"Required script not found: {script}")
-            append_to_log_tsv(log_tsv, annotation_id, "script_missing")
+            append_to_retry_log(retry_log, annotation_id, "script_missing")
             sys.exit(1)
 
     # Work inside a temp directory so downloads don't pollute the repo
@@ -227,12 +227,12 @@ def main():
 
         ok, err = download_file(annotation_url, gff_file)
         if not ok:
-            append_to_log_tsv(log_tsv, annotation_id, err)
+            append_to_retry_log(retry_log, annotation_id, err)
             sys.exit(1)
 
         ok, err = download_file(assembly_url, fasta_file)
         if not ok:
-            append_to_log_tsv(log_tsv, annotation_id, err)
+            append_to_retry_log(retry_log, annotation_id, err)
             sys.exit(1)
 
         # ------------------------------------------------------------------
@@ -268,7 +268,7 @@ def main():
             sys.exit(1)
         except FileNotFoundError as e:
             logger.error("annocli not found")
-            append_to_log_tsv(log_tsv, annotation_id, str(e))
+            append_to_retry_log(retry_log, annotation_id, str(e))
             sys.exit(1)
 
         if not alias_gff_file.exists():
@@ -327,7 +327,7 @@ def main():
                 "Lineage folder not found. Tried: "
                 + ", ".join(str(p) for p in lineage_candidates)
             )
-            append_to_log_tsv(log_tsv, annotation_id, "lineage_missing")
+            append_to_retry_log(retry_log, annotation_id, "lineage_missing")
             sys.exit(1)
 
         busco_output = str(work_dir / f"busco_{annotation_id}")
@@ -362,7 +362,7 @@ def main():
 
     except Exception as e:
         logger.error(f"Unexpected error: {e}")
-        append_to_log_tsv(log_tsv, annotation_id, "unexpected_error")
+        append_to_retry_log(retry_log, annotation_id, "unexpected_error")
         sys.exit(1)
 
     finally:
