@@ -1,6 +1,7 @@
 # BUSCO-tracker
 
 Automated BUSCO analysis for eukaryotic genome annotations. 
+See all results [here](BUSCO/eukaryota_odb12/BUSCO.tsv).
 
 ## Status
 
