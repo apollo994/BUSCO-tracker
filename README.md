@@ -9,7 +9,7 @@ Automated BUSCO analysis for eukaryotic genome annotations.
 | Metric | Count | Percentage |
 |--------|-------|------------|
 | **Total annotations** | 14,800 | 100% |
-| **BUSCO complete** | 14,104 | 95.3% |
+| **Has BUSCO values** | 14,104 | 95.3% |
 | **Pending/Retry** | 0 | 0.0% |
 | **Given up** | 696 | 4.7% |
 

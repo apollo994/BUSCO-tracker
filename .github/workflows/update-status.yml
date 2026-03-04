@@ -8,6 +8,8 @@ on:
 jobs:
   update-status:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     
     steps:
       - name: Checkout repository
@@ -50,7 +52,7 @@ jobs:
           # Update README.md in place using sed
           sed -i.bak "s/^\*\*Last updated:.*/**Last updated:** $TIMESTAMP/" README.md
           sed -i.bak "s/| \*\*Total annotations\*\* | [0-9,]* | [0-9.]*% |/| **Total annotations** | $TOTAL_FMT | 100% |/" README.md
-          sed -i.bak "s/| \*\*BUSCO complete\*\* | [0-9,]* | [0-9.]*% |/| **BUSCO complete** | $BUSCO_FMT | $BUSCO_PCT% |/" README.md
+          sed -i.bak "s/| \*\*Has BUSCO values\*\* | [0-9,]* | [0-9.]*% |/| **Has BUSCO values** | $BUSCO_FMT | $BUSCO_PCT% |/" README.md
           sed -i.bak "s/| \*\*Pending\/Retry\*\* | [0-9,]* | [0-9.]*% |/| **Pending\/Retry** | $PENDING_FMT | $PENDING_PCT% |/" README.md
           sed -i.bak "s/| \*\*Given up\*\* | [0-9,]* | [0-9.]*% |/| **Given up** | $GIVEUP_FMT | $GIVEUP_PCT% |/" README.md
           rm -f README.md.bak
