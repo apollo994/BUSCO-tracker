@@ -8,8 +8,8 @@ logger = logging.getLogger(__name__)
 
 BUSCO_HEADER = ['annotation_id', 'lineage', 'busco_count', 'complete',
                 'single', 'duplicated', 'fragmented', 'missing']
-ERROR_LOG_HEADER = ['annotation_id', 'run_at', 'step']
-GIVEUP_HEADER = ERROR_LOG_HEADER
+RETRY_HEADER = ['annotation_id', 'run_at', 'step']
+GIVEUP_HEADER = RETRY_HEADER
 
 
 def compute_pending_ids(all_ids, success_ids, error_ids, giveup_ids=None):

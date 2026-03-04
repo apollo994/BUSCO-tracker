@@ -2,10 +2,10 @@
 """
 Build a GitHub Actions matrix for batch BUSCO processing.
 
-Reads annotations.tsv, BUSCO.tsv, and error_log.tsv, then computes the
+Reads annotations.tsv, BUSCO.tsv, and .retry.log, then computes the
 pending annotation IDs in priority order:
-  1. Never run  — in annotations but not in BUSCO or error_log
-  2. Failed     — in error_log but not yet in BUSCO
+  1. Never run  — in annotations but not in BUSCO or retry
+  2. Failed     — in retry but not yet in BUSCO
 
 Emits GitHub Actions outputs:
   - matrix        JSON array of chunk indices [0, 1, ..., N-1]
@@ -13,7 +13,7 @@ Emits GitHub Actions outputs:
   - pending_count total number of pending annotations
 
 Usage:
-    python build_matrix.py <annotations_tsv> <busco_tsv> <error_log_tsv> [--max-per-job N]
+    python build_matrix.py <annotations_tsv> <busco_tsv> <retry_tsv> [--max-per-job N]
 
 Writes to $GITHUB_OUTPUT if the environment variable is set, otherwise prints
 to stdout (useful for local testing).
@@ -46,13 +46,13 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('annotations_tsv', help='Path to annotations.tsv')
     parser.add_argument('busco_tsv',       help='Path to BUSCO.tsv (successful results)')
-    parser.add_argument('error_log_tsv',   help='Path to error_log.tsv (failed runs)')
+    parser.add_argument('retry_tsv',       help='Path to .retry.log (failed runs)')
     parser.add_argument('--max-chunks', type=int, default=256,
                         help='Maximum number of matrix chunks (default: 256)')
     parser.add_argument('--max-per-job', type=int, default=None,
                         help='Maximum annotations per job; limits total processed per trigger')
     parser.add_argument('--giveup-tsv', default=None,
-                        help='Path to giveup.log (given-up annotations to exclude)')
+                        help='Path to .giveup.log (given-up annotations to exclude)')
     args = parser.parse_args()
 
     all_ids     = load_ids(args.annotations_tsv)
@@ -68,12 +68,12 @@ def main():
         return
 
     success_ids = load_ids(args.busco_tsv)
-    error_ids   = load_ids(args.error_log_tsv)
+    retry_ids   = load_ids(args.retry_tsv)
     giveup_ids  = load_ids(args.giveup_tsv) if args.giveup_tsv else set()
 
-    pending_ids = compute_pending_ids(all_ids, success_ids, error_ids, giveup_ids)
-    never_run   = all_ids - success_ids - error_ids - giveup_ids
-    failed      = (error_ids - success_ids) & all_ids
+    pending_ids = compute_pending_ids(all_ids, success_ids, retry_ids, giveup_ids)
+    never_run   = all_ids - success_ids - retry_ids - giveup_ids
+    failed      = (retry_ids - success_ids) & all_ids
 
     logger.info(f"Total annotations : {len(all_ids)}")
     logger.info(f"Successful        : {len(success_ids)}")

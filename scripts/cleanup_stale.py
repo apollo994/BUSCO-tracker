@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-Remove stale annotation entries from BUSCO.tsv and error_log.tsv.
+Remove stale annotation entries from BUSCO.tsv and .retry.log.
 
 An annotation is stale when its annotation_id is no longer present in
 annotations.tsv (e.g. it was removed from the AnnoTrEive API).
 
 Usage:
-    python cleanup_stale.py <annotations_tsv> <busco_tsv> <error_log_tsv>
+    python cleanup_stale.py <annotations_tsv> <busco_tsv> <retry_tsv>
 """
 import sys
 import argparse
@@ -57,9 +57,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('annotations_tsv', help='Path to annotations.tsv')
     parser.add_argument('busco_tsv',       help='Path to BUSCO.tsv (successful results)')
-    parser.add_argument('error_log_tsv',   help='Path to error_log.tsv (failed runs)')
+    parser.add_argument('retry_tsv',       help='Path to .retry.log (failed runs)')
     parser.add_argument('giveup_tsv',      nargs='?', default=None,
-                        help='Path to giveup.log (given-up annotations)')
+                        help='Path to .giveup.log (given-up annotations)')
     args = parser.parse_args()
 
     valid_ids = load_ids(args.annotations_tsv)
@@ -70,16 +70,16 @@ def main():
     logger.info(f"Loaded {len(valid_ids)} valid annotation IDs from {args.annotations_tsv}")
 
     removed_busco = filter_tsv(args.busco_tsv, valid_ids)
-    removed_errors = filter_tsv(args.error_log_tsv, valid_ids)
+    removed_retry = filter_tsv(args.retry_tsv, valid_ids)
     removed_giveup = 0
     if args.giveup_tsv:
         removed_giveup = filter_tsv(args.giveup_tsv, valid_ids)
 
     logger.info(f"Cleanup complete: removed {removed_busco} rows from BUSCO.tsv, "
-                f"{removed_errors} rows from error_log.tsv, "
-                f"{removed_giveup} rows from giveup.log")
+                f"{removed_retry} rows from .retry.log, "
+                f"{removed_giveup} rows from .giveup.log")
 
-    if removed_busco == 0 and removed_errors == 0 and removed_giveup == 0:
+    if removed_busco == 0 and removed_retry == 0 and removed_giveup == 0:
         logger.info("No stale entries found — files unchanged")
 
 

@@ -34,61 +34,22 @@ jobs:
           python cleanup_stale.py \
             ../annotations.tsv \
             ../BUSCO/eukaryota_odb12/BUSCO.tsv \
-            ../BUSCO/eukaryota_odb12/error_log.tsv \
-            ../BUSCO/eukaryota_odb12/giveup.log
+            ../BUSCO/eukaryota_odb12/.retry.log \
+            ../BUSCO/eukaryota_odb12/.giveup.log
 
       - name: Commit and push
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add BUSCO/eukaryota_odb12/BUSCO.tsv BUSCO/eukaryota_odb12/error_log.tsv BUSCO/eukaryota_odb12/giveup.log
+          git add BUSCO/eukaryota_odb12/BUSCO.tsv BUSCO/eukaryota_odb12/.retry.log BUSCO/eukaryota_odb12/.giveup.log
           if git diff --staged --quiet; then
             echo "No stale entries found — nothing to commit"
             echo '{"removed_busco":"0","removed_errors":"0"}' > /tmp/diff_stats.json
           else
             REMOVED_BUSCO=$(git diff --staged --numstat BUSCO/eukaryota_odb12/BUSCO.tsv | awk '{print $2}')
-            REMOVED_ERRORS=$(git diff --staged --numstat BUSCO/eukaryota_odb12/error_log.tsv | awk '{print $2}')
-            echo "{\"removed_busco\":\"${REMOVED_BUSCO:-0}\",\"removed_errors\":\"${REMOVED_ERRORS:-0}\"}" > /tmp/diff_stats.json
+            REMOVED_ERRORS=$(git diff --staged --numstat BUSCO/eukaryota_odb12/.retry.log | awk '{print $2}')
             TIMESTAMP=$(date -u '+%Y-%m-%d %H:%M UTC')
-            git commit -m "Remove stale annotations — ${TIMESTAMP}, -${REMOVED_BUSCO:-0} from BUSCO.tsv, -${REMOVED_ERRORS:-0} from error_log.tsv"
+            git commit -m "Cleanup stale — ${TIMESTAMP}, -${REMOVED_BUSCO:-0} from BUSCO.tsv, -${REMOVED_ERRORS:-0} from .retry.log"
             git pull --rebase
-            git push
-          fi
-
-      - name: Log cleanup execution to cleanup.log
-        run: |
-          python3 << 'EOF'
-          import csv
-          import json
-          from datetime import datetime
-
-          timestamp = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
-
-          # Read diff stats captured before commit
-          with open('/tmp/diff_stats.json') as f:
-              stats = json.load(f)
-          removed_busco = stats.get('removed_busco', '0')
-          removed_errors = stats.get('removed_errors', '0')
-
-          # Count current totals (excluding header)
-          def count_lines(path):
-              try:
-                  with open(path) as f:
-                      return sum(1 for _ in f) - 1
-              except FileNotFoundError:
-                  return 0
-
-          total_busco = count_lines('BUSCO/eukaryota_odb12/BUSCO.tsv')
-          total_errors = count_lines('BUSCO/eukaryota_odb12/error_log.tsv')
-
-          with open('logs/cleanup.log', 'a') as f:
-              writer = csv.writer(f, delimiter='\t', lineterminator='\n')
-              writer.writerow([timestamp, removed_busco, removed_errors, total_busco, total_errors])
-          EOF
-          git add logs/cleanup.log
-          if git diff --staged --quiet; then
-            echo "No log changes to commit"
-          else
-            git commit -m "Update cleanup.log - $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
             git push
           fi

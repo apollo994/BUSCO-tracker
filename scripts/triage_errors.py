@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """
-Triage error_log entries: give up on annotations that have failed more than once.
+Triage retry entries: give up on annotations that have failed more than once.
 
-Reads error_log.tsv, groups rows by annotation_id, and:
-  - already in BUSCO.tsv → remove from error_log.tsv (succeeded on retry)
-  - count == 1  → keep in error_log.tsv  (will be retried once more)
-  - count  > 1  → append to giveup.log and remove from error_log.tsv
+Reads .retry.log, groups rows by annotation_id, and:
+  - already in BUSCO.tsv → remove from .retry.log (succeeded on retry)
+  - count == 1  → keep in .retry.log  (will be retried once more)
+  - count  > 1  → append to .giveup.log and remove from .retry.log
 
 Usage:
-    python triage_errors.py <error_log_tsv> <giveup_tsv> <busco_tsv>
+    python triage_errors.py <retry_tsv> <giveup_tsv> <busco_tsv>
 """
 import csv
 import logging
@@ -16,14 +16,14 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
-from utils import GIVEUP_HEADER, ERROR_LOG_HEADER, load_ids
+from utils import GIVEUP_HEADER, RETRY_HEADER, load_ids
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 
 def load_existing_giveup_entries(tsv_path):
-    """Return set of (annotation_id, run_at) already in giveup.log."""
+    """Return set of (annotation_id, run_at) already in .giveup.log."""
     p = Path(tsv_path)
     if not p.exists():
         return set()
@@ -46,21 +46,21 @@ def ensure_header(tsv_path, header):
 
 def main():
     if len(sys.argv) != 4:
-        print("Usage: python triage_errors.py <error_log_tsv> <giveup_tsv> <busco_tsv>")
+        print("Usage: python triage_errors.py <retry_tsv> <giveup_tsv> <busco_tsv>")
         sys.exit(1)
 
-    error_log_tsv = sys.argv[1]
+    retry_tsv = sys.argv[1]
     giveup_tsv    = sys.argv[2]
     busco_tsv     = sys.argv[3]
 
-    error_path = Path(error_log_tsv)
-    if not error_path.exists():
-        logger.info(f"{error_log_tsv} not found — nothing to triage")
+    retry_path = Path(retry_tsv)
+    if not retry_path.exists():
+        logger.info(f"{retry_tsv} not found — nothing to triage")
         return
 
-    # Read all error_log rows, grouped by annotation_id
+    # Read all retry rows, grouped by annotation_id
     groups = defaultdict(list)
-    with open(error_path, newline='') as f:
+    with open(retry_path, newline='') as f:
         reader = csv.DictReader(f, delimiter='\t')
         for row in reader:
             aid = row.get('annotation_id', '').strip()
@@ -68,7 +68,7 @@ def main():
                 groups[aid].append(row)
 
     if not groups:
-        logger.info("error_log.tsv is empty — nothing to triage")
+        logger.info(".retry.log is empty — nothing to triage")
         return
 
     # Remove entries for annotations that have since succeeded
@@ -90,7 +90,7 @@ def main():
 
     logger.info(f"Triage: {len(resolved)} resolved (succeeded on retry), "
                 f"{len(keep_rows)} rows kept, "
-                f"{len(giveup_rows)} rows moved to giveup.log "
+                f"{len(giveup_rows)} rows moved to .giveup.log "
                 f"({len(groups) - len(keep_rows)} annotations given up)")
 
     # Append new giveup rows (dedup against existing entries)
@@ -107,12 +107,12 @@ def main():
             writer.writerows(new_giveup)
         logger.info(f"Appended {len(new_giveup)} new rows to {giveup_tsv}")
 
-    # Rewrite error_log.tsv with only the kept rows
-    with open(error_path, 'w', newline='') as f:
+    # Rewrite .retry.log with only the kept rows
+    with open(retry_path, 'w', newline='') as f:
         writer = csv.writer(f, delimiter='\t', lineterminator='\n')
-        writer.writerow(ERROR_LOG_HEADER)
+        writer.writerow(RETRY_HEADER)
         for row in keep_rows:
-            writer.writerow([row[col] for col in ERROR_LOG_HEADER])
+            writer.writerow([row[col] for col in RETRY_HEADER])
 
     logger.info("Triage complete")
 

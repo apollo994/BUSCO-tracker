@@ -3,7 +3,7 @@
 Run a strided slice of pending BUSCO analyses for one matrix job.
 
 Usage:
-    python run_busco_batch.py <annotations_tsv> <busco_tsv> <error_log_tsv> \
+    python run_busco_batch.py <annotations_tsv> <busco_tsv> <retry_tsv> \
         <chunk_index> <chunk_count> <output_dir> [max_per_job]
 
 Slicing: pending_sorted[chunk_index::chunk_count]
@@ -12,7 +12,7 @@ Slicing: pending_sorted[chunk_index::chunk_count]
         chunk 2 of 4                        → [c,g]
         chunk 3 of 4                        → [d,h]
 
-Per-annotation failures are recorded in the error_log TSV fragment and
+Per-annotation failures are recorded in the retry TSV fragment and
 execution continues — the batch script always exits 0.
 """
 import sys
@@ -23,7 +23,7 @@ import logging
 from datetime import datetime
 from pathlib import Path
 
-from utils import load_ids, compute_pending_ids, ERROR_LOG_HEADER
+from utils import load_ids, compute_pending_ids, RETRY_HEADER
 
 logging.basicConfig(
     level=logging.INFO,
@@ -54,14 +54,14 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('annotations_tsv', help='Path to annotations.tsv')
     parser.add_argument('busco_tsv',       help='Path to BUSCO.tsv (successful results)')
-    parser.add_argument('error_log_tsv',   help='Path to error_log.tsv (failed runs)')
+    parser.add_argument('retry_tsv',       help='Path to .retry.log (failed runs)')
     parser.add_argument('chunk_index',     type=int, help='Index of this chunk (0-based)')
     parser.add_argument('chunk_count',     type=int, help='Total number of chunks')
     parser.add_argument('output_dir',      help='Directory to write result/log fragments')
     parser.add_argument('max_per_job',     type=int, nargs='?', default=None,
                         help='Cap on annotations processed by this chunk')
     parser.add_argument('--giveup-tsv',    default=None,
-                        help='Path to giveup.log (given-up annotations to exclude)')
+                        help='Path to .giveup.log (given-up annotations to exclude)')
     args = parser.parse_args()
 
     output_dir = Path(args.output_dir)
@@ -69,10 +69,10 @@ def main():
 
     annotations = load_annotations(args.annotations_tsv)
     success_ids = load_ids(args.busco_tsv)
-    error_ids   = load_ids(args.error_log_tsv)
+    retry_ids   = load_ids(args.retry_tsv)
     giveup_ids  = load_ids(args.giveup_tsv) if args.giveup_tsv else set()
 
-    pending_ids = compute_pending_ids(set(annotations.keys()), success_ids, error_ids, giveup_ids)
+    pending_ids = compute_pending_ids(set(annotations.keys()), success_ids, retry_ids, giveup_ids)
 
     my_slice = pending_ids[args.chunk_index::args.chunk_count]
     if args.max_per_job is not None:
@@ -117,7 +117,7 @@ def main():
             try:
                 with open(log_fragment, 'w', newline='') as lf:
                     w = csv.writer(lf, delimiter='\t', lineterminator='\n')
-                    w.writerow(ERROR_LOG_HEADER)
+                    w.writerow(RETRY_HEADER)
                     w.writerow([annotation_id,
                                 datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
                                 'unexpected_error'])

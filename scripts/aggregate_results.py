@@ -3,23 +3,23 @@
 Aggregate per-job BUSCO result fragments into the shared TSV files.
 
 Usage:
-    python aggregate_results.py <artifacts_dir> <busco_tsv> <error_log_tsv>
+    python aggregate_results.py <artifacts_dir> <busco_tsv> <retry_tsv>
 
 Each run-busco-analysis job uploads up to two files:
     result_<annotation_id>.tsv   -- one BUSCO row (header + data) on success
-    log_<annotation_id>.tsv      -- one error row (header + data) on failure
+    log_<annotation_id>.tsv      -- one retry row (header + data) on failure
 
 This script scans <artifacts_dir> recursively for those fragments and appends
 new rows, skipping any already present.
-  - BUSCO.tsv      dedup key: annotation_id       (one success row per annotation)
-  - error_log.tsv  dedup key: (annotation_id, run_at)  (full history of failures)
+  - BUSCO.tsv    dedup key: annotation_id       (one success row per annotation)
+  - .retry.log   dedup key: (annotation_id, run_at)  (full history of failures)
 """
 import sys
 import csv
 import logging
 from pathlib import Path
 
-from utils import BUSCO_HEADER, ERROR_LOG_HEADER
+from utils import BUSCO_HEADER, RETRY_HEADER
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
@@ -39,8 +39,8 @@ def load_existing_ids(tsv_path):
     return ids
 
 
-def load_existing_error_entries(tsv_path):
-    """Return set of (annotation_id, run_at) tuples already in error_log.tsv."""
+def load_existing_retry_entries(tsv_path):
+    """Return set of (annotation_id, run_at) tuples already in .retry.log."""
     p = Path(tsv_path)
     if not p.exists():
         return set()
@@ -83,27 +83,27 @@ def read_fragment(fragment_path, expected_header):
 
 def main():
     if len(sys.argv) != 4:
-        print("Usage: python aggregate_results.py <artifacts_dir> <busco_tsv> <error_log_tsv>")
+        print("Usage: python aggregate_results.py <artifacts_dir> <busco_tsv> <retry_tsv>")
         sys.exit(1)
 
     artifacts_dir = Path(sys.argv[1])
     busco_tsv     = sys.argv[2]
-    error_log_tsv = sys.argv[3]
+    retry_tsv     = sys.argv[3]
 
     if not artifacts_dir.is_dir():
         logger.error(f"Artifacts directory not found: {artifacts_dir}")
         sys.exit(1)
 
-    existing_busco_ids    = load_existing_ids(busco_tsv)
-    existing_error_entries = load_existing_error_entries(error_log_tsv)
-    logger.info(f"Existing BUSCO rows     : {len(existing_busco_ids)}")
-    logger.info(f"Existing error_log rows : {len(existing_error_entries)}")
+    existing_busco_ids   = load_existing_ids(busco_tsv)
+    existing_retry_entries = load_existing_retry_entries(retry_tsv)
+    logger.info(f"Existing BUSCO rows   : {len(existing_busco_ids)}")
+    logger.info(f"Existing retry rows   : {len(existing_retry_entries)}")
 
-    ensure_header(busco_tsv,     BUSCO_HEADER)
-    ensure_header(error_log_tsv, ERROR_LOG_HEADER)
+    ensure_header(busco_tsv,   BUSCO_HEADER)
+    ensure_header(retry_tsv,   RETRY_HEADER)
 
     busco_new = []
-    error_new = []
+    retry_new = []
 
     result_fragments = sorted(artifacts_dir.rglob("result_*.tsv"))
     log_fragments    = sorted(artifacts_dir.rglob("log_*.tsv"))
@@ -119,18 +119,18 @@ def main():
                 logger.info(f"  ~ skip (already exists): {row['annotation_id']}")
 
     for frag in log_fragments:
-        rows = read_fragment(frag, ERROR_LOG_HEADER)
+        rows = read_fragment(frag, RETRY_HEADER)
         for row in rows:
             key = (row['annotation_id'], row['run_at'])
-            if key not in existing_error_entries:
-                error_new.append(row)
-                existing_error_entries.add(key)
-                logger.info(f"  + error_log: {row['annotation_id']} @ {row['run_at']}")
+            if key not in existing_retry_entries:
+                retry_new.append(row)
+                existing_retry_entries.add(key)
+                logger.info(f"  + retry: {row['annotation_id']} @ {row['run_at']}")
 
-    append_rows(busco_tsv,     busco_new)
-    append_rows(error_log_tsv, error_new)
+    append_rows(busco_tsv,   busco_new)
+    append_rows(retry_tsv,   retry_new)
 
-    logger.info(f"Appended {len(busco_new)} BUSCO rows and {len(error_new)} error_log rows.")
+    logger.info(f"Appended {len(busco_new)} BUSCO rows and {len(retry_new)} retry rows.")
 
 
 if __name__ == "__main__":

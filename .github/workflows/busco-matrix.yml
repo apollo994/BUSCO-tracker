@@ -42,7 +42,7 @@ jobs:
 
       - name: Build matrix
         id: build
-        run: python scripts/build_matrix.py annotations.tsv BUSCO/eukaryota_odb12/BUSCO.tsv BUSCO/eukaryota_odb12/error_log.tsv --max-per-job ${{ github.event.inputs.max_per_job || '10' }} --giveup-tsv BUSCO/eukaryota_odb12/giveup.log
+        run: python scripts/build_matrix.py annotations.tsv BUSCO/eukaryota_odb12/BUSCO.tsv BUSCO/eukaryota_odb12/.retry.log --max-per-job ${{ github.event.inputs.max_per_job || '10' }} --giveup-tsv BUSCO/eukaryota_odb12/.giveup.log
 
       - name: Summary
         run: |
@@ -108,12 +108,12 @@ jobs:
           python scripts/run_busco_batch.py \
             annotations.tsv \
             BUSCO/eukaryota_odb12/BUSCO.tsv \
-            BUSCO/eukaryota_odb12/error_log.tsv \
+            BUSCO/eukaryota_odb12/.retry.log \
             ${{ matrix.chunk_index }} \
             ${{ needs.setup.outputs.chunk_count }} \
             batch_output/ \
             ${{ github.event.inputs.max_per_job || '10' }} \
-            --giveup-tsv BUSCO/eukaryota_odb12/giveup.log
+            --giveup-tsv BUSCO/eukaryota_odb12/.giveup.log
 
       - name: Upload batch artifact
         if: always()
@@ -125,7 +125,7 @@ jobs:
           overwrite: true
 
   # ─────────────────────────────────────────────────────────────────────────────
-  # JOB 3: Aggregate all artifacts into BUSCO.tsv and error_log.tsv
+  # JOB 3: Aggregate all artifacts into BUSCO.tsv and .retry.log
   # ─────────────────────────────────────────────────────────────────────────────
   aggregate:
     needs: [setup, busco]
@@ -151,26 +151,26 @@ jobs:
           python-version: '3.11'
 
       - name: Aggregate results
-        run: python scripts/aggregate_results.py artifacts/ BUSCO/eukaryota_odb12/BUSCO.tsv BUSCO/eukaryota_odb12/error_log.tsv
+        run: python scripts/aggregate_results.py artifacts/ BUSCO/eukaryota_odb12/BUSCO.tsv BUSCO/eukaryota_odb12/.retry.log
 
       - name: Display summary
         run: |
           echo "=== BUSCO.tsv — last 10 rows ==="
           tail -n 10 BUSCO/eukaryota_odb12/BUSCO.tsv
           echo ""
-          echo "=== error_log.tsv — last 10 rows ==="
-          tail -n 10 BUSCO/eukaryota_odb12/error_log.tsv
+          echo "=== .retry.log — last 10 rows ==="
+          tail -n 10 BUSCO/eukaryota_odb12/.retry.log
 
       - name: Commit and push
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add BUSCO/eukaryota_odb12/BUSCO.tsv BUSCO/eukaryota_odb12/error_log.tsv
+          git add BUSCO/eukaryota_odb12/BUSCO.tsv BUSCO/eukaryota_odb12/.retry.log
           if git diff --staged --quiet; then
             echo "No new results to commit"
           else
             ADDED=$(git diff --staged BUSCO/eukaryota_odb12/BUSCO.tsv | grep '^+' | grep -v '^+++' | wc -l | tr -d ' ')
-            ERRORS=$(git diff --staged BUSCO/eukaryota_odb12/error_log.tsv | grep '^+' | grep -v '^+++' | wc -l | tr -d ' ')
+            ERRORS=$(git diff --staged BUSCO/eukaryota_odb12/.retry.log | grep '^+' | grep -v '^+++' | wc -l | tr -d ' ')
             TIMESTAMP=$(date -u '+%Y-%m-%d %H:%M UTC')
             git commit -m "Aggregate BUSCO results — ${TIMESTAMP}, +${ADDED} annotations, +${ERRORS} error_log rows"
             git pull --rebase

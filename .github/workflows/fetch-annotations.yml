@@ -41,36 +41,7 @@ jobs:
             ADDED=$(git diff --staged --numstat annotations.tsv | awk '{print $1}')
             REMOVED=$(git diff --staged --numstat annotations.tsv | awk '{print $2}')
             TOTAL=$(tail -n +2 annotations.tsv | wc -l | tr -d ' ')
-            echo "{\"added\":\"${ADDED:-0}\",\"removed\":\"${REMOVED:-0}\"}" > /tmp/diff_stats.json
             TIMESTAMP=$(date -u '+%Y-%m-%d %H:%M UTC')
-            git commit -m "Update annotations.tsv — ${TIMESTAMP}, +${ADDED:-0} new, -${REMOVED:-0} removed, ${TOTAL} total"
+            git commit -m "Fetch annotations — ${TIMESTAMP}, +${ADDED:-0} new, -${REMOVED:-0} removed, ${TOTAL} total"
             git push
           fi
-      
-      - name: Log workflow execution to annotations.log
-        run: |
-          python3 << 'EOF'
-          import csv
-          import json
-          from datetime import datetime
-          
-          timestamp = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
-          
-          # Read diff stats captured before commit
-          with open('/tmp/diff_stats.json') as f:
-              stats = json.load(f)
-          added = stats.get('added', 'NA')
-          removed = stats.get('removed', 'NA')
-          
-          # Count total lines in annotations.tsv
-          with open('annotations.tsv', 'r') as f:
-              total = sum(1 for _ in f) - 1  # Exclude header
-          
-          # Append to log
-          with open('logs/annotations.log', 'a') as f:
-              writer = csv.writer(f, delimiter='\t', lineterminator='\n')
-              writer.writerow([timestamp, added, removed, total])
-          EOF
-          git add logs/annotations.log
-          git commit -m "Update annotations.log - $(date '+%Y-%m-%d %H:%M:%S UTC')"
-          git push
