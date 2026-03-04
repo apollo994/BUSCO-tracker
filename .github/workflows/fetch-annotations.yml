@@ -40,8 +40,10 @@ jobs:
           else
             ADDED=$(git diff --staged --numstat annotations.tsv | awk '{print $1}')
             REMOVED=$(git diff --staged --numstat annotations.tsv | awk '{print $2}')
+            TOTAL=$(tail -n +2 annotations.tsv | wc -l | tr -d ' ')
             echo "{\"added\":\"${ADDED:-0}\",\"removed\":\"${REMOVED:-0}\"}" > /tmp/diff_stats.json
-            git commit -m "Update annotations.tsv - $(date '+%Y-%m-%d %H:%M:%S UTC')"
+            TIMESTAMP=$(date -u '+%Y-%m-%d %H:%M UTC')
+            git commit -m "Update annotations.tsv — ${TIMESTAMP}, +${ADDED:-0} new, -${REMOVED:-0} removed, ${TOTAL} total"
             git push
           fi
       
