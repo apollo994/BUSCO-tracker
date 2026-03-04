@@ -2,8 +2,8 @@ name: Fetch Annotations
 
 on:
   schedule:
-    # - cron: '0 12 * * 0'  # Weekly on Sunday at 12 PM UTC
-    - cron: '0 */4 * * *'  # Every 4 hours (testing)
+    - cron: '0 12 * * 0'  # Weekly on Sunday at 12 PM UTC
+    # - cron: '0 */4 * * *'  # Every 4 hours (testing)
   workflow_dispatch:
 
 permissions:
