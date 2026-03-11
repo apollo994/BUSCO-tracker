@@ -1,6 +1,8 @@
 name: Triage Errors
 
 on:
+  schedule:
+    - cron: '0 12 * * 5'  # Every Friday at 12:00 UTC
   workflow_dispatch:
   workflow_run:
     workflows:
