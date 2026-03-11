@@ -1391,3 +1391,5 @@ fd947d459c84792bde2c7c8464262415	2026-03-03 17:34:13	"FASTA index file /tmp/tmp.
 fd947d459c84792bde2c7c8464262415	2026-03-04 16:33:44	FASTA index file /tmp/tmp.9a7HqwRTB4/input.fna.fai created. GffObj::getSpliced() error: improper genomic coordinate 519804 on NC_015121.1 for rna-ViraM_p11
 fe279592c1e3df52d00e879993831ff0	2026-03-03 17:38:16	"FASTA index file /tmp/tmp.C9WJUc2uFJ/input.fna.fai created. Error parsing strand (?) from GFF line: NC_048499.1	RefSeq	mRNA	47121	279475	.	?	.	ID=rna-HJE17_mgp38;Parent=gene-HJE17_mgp38;Dbxref=GeneID:55290668;exception=trans-splicing;gbkey=mRNA;gene=nad5;locus_tag=HJE17_mgp38"
 fe279592c1e3df52d00e879993831ff0	2026-03-04 16:32:42	FASTA index file /tmp/tmp.ynHwxUsfDt/input.fna.fai created. GffObj::getSpliced() error: improper genomic coordinate 453891 on NC_048499.1 for rna-HJE17_mgp32
+39d050cb16f42c194d78f5417996fe18	2026-03-08 12:42:18	unexpected_error
+39d050cb16f42c194d78f5417996fe18	2026-03-08 12:52:04	unexpected_error
