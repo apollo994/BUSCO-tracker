@@ -367,8 +367,6 @@ efa033a12b62d09662606a1d52896c0e	2026-03-03 18:03:27	FASTA index file /tmp/tmp.F
 07fb23a367220dd69925358f16f190a1	2026-03-03 18:01:25	FASTA index file /tmp/tmp.gvDYMQNY34/input.fna.fai created.
 21f305188e2bc499e275109880f800b2	2026-03-03 17:36:02	FASTA index file /tmp/tmp.8eOdRrxG8r/input.fna.fai created.
 21f305188e2bc499e275109880f800b2	2026-03-03 18:10:07	FASTA index file /tmp/tmp.etA3w7UNC1/input.fna.fai created.
-3c6a4f7f6645e765a27fbdc1b3e5f6e8	2026-03-03 17:36:03	HTTP 404 downloading https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/024/291/795/GCA_024291795.1_Septoria__linicola__SE14017/GCA_024291795.1_Septoria__linicola__SE14017_genomic.fna.gz: Not Found
-3c6a4f7f6645e765a27fbdc1b3e5f6e8	2026-03-03 18:01:35	HTTP 404 downloading https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/024/291/795/GCA_024291795.1_Septoria__linicola__SE14017/GCA_024291795.1_Septoria__linicola__SE14017_genomic.fna.gz: Not Found
 54ed6eff91c5f7fe087a886a920d51d4	2026-03-03 17:36:06	Unexpected error downloading : unknown url type: ''
 54ed6eff91c5f7fe087a886a920d51d4	2026-03-03 18:01:37	Unexpected error downloading : unknown url type: ''
 8405ed095d47789d0e9d48f299428332	2026-03-03 17:36:33	FASTA index file /tmp/tmp.86POqUJE4F/input.fna.fai created.
