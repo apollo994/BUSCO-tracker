@@ -1219,8 +1219,6 @@ c5c2bbf6cb33d0bfede0a7e21287798f	2026-03-03 17:38:57	FASTA index file /tmp/tmp.t
 c5c2bbf6cb33d0bfede0a7e21287798f	2026-03-03 18:06:22	FASTA index file /tmp/tmp.YLh2JmRGxz/input.fna.fai created.
 e27f8737712957ebc173d58af2ace34b	2026-03-03 17:39:00	FASTA index file /tmp/tmp.CKo1VHpB8A/input.fna.fai created.
 e27f8737712957ebc173d58af2ace34b	2026-03-03 18:06:25	FASTA index file /tmp/tmp.Fqk8F1N96E/input.fna.fai created.
-17501f087a6d2c50b6cc819b25111d31	2026-03-03 17:36:33	"FASTA index file /tmp/tmp.w4o5lrfsyJ/input.fna.fai created. free(): invalid next size (normal) /home/runner/work/BUSCO-tracker/BUSCO-tracker/scripts/01_extract_proteins.sh: line 64:  2640 Aborted                 (core dumped) gffread -g ""$FASTA_FILE"" -y ""$ALL_PROTEINS_OUTPUT"" ""$NO_MT_GFF_FILE"""
-17501f087a6d2c50b6cc819b25111d31	2026-03-03 18:04:56	"FASTA index file /tmp/tmp.XimoH4EQdI/input.fna.fai created. free(): invalid next size (normal) /home/runner/work/BUSCO-tracker/BUSCO-tracker/scripts/01_extract_proteins.sh: line 64:  2637 Aborted                 (core dumped) gffread -g ""$FASTA_FILE"" -y ""$ALL_PROTEINS_OUTPUT"" ""$NO_MT_GFF_FILE"""
 32a51d32177eb112163d39c71ea6c7df	2026-03-03 17:36:40	FASTA index file /tmp/tmp.aIX5kVvskd/input.fna.fai created.
 32a51d32177eb112163d39c71ea6c7df	2026-03-03 18:04:29	HTTP 403 downloading https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/030/267/525/GCA_030267525.1_ASM3026752v1/GCA_030267525.1_ASM3026752v1_genomic.fna.gz: Forbidden
 49e978534d0a5809fa4de6891bd6cd64	2026-03-03 17:36:56	FASTA index file /tmp/tmp.tNQRocoalE/input.fna.fai created.
