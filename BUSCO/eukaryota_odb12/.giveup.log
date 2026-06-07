@@ -673,8 +673,6 @@ f51f7c302f57c3e841dae9402c2ccd7f	2026-03-03 18:09:24	FASTA index file /tmp/tmp.c
 874d708ecc48f60ae9f615f50e82e5d5	2026-03-03 18:20:28	FASTA index file /tmp/tmp.KFULt6x9zM/input.fna.fai created.
 9fa6d054833189f86e5c3063751bbbba	2026-03-03 17:41:27	FASTA index file /tmp/tmp.UMmU8FODnk/input.fna.fai created.
 9fa6d054833189f86e5c3063751bbbba	2026-03-03 18:20:33	FASTA index file /tmp/tmp.Yph3DVS2Rb/input.fna.fai created.
-bdca31a53b76c395f2c4dfe127e7e4ca	2026-03-03 17:41:32	FASTA index file /tmp/tmp.elKp9V7VfA/input.fna.fai created.
-bdca31a53b76c395f2c4dfe127e7e4ca	2026-03-03 18:20:38	FASTA index file /tmp/tmp.n437059q9T/input.fna.fai created.
 d81a24c36596aa5b60321ce1ffb25c12	2026-03-03 17:41:41	FASTA index file /tmp/tmp.At0tBnrJqV/input.fna.fai created.
 d81a24c36596aa5b60321ce1ffb25c12	2026-03-03 18:20:39	HTTP 403 downloading https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/030/864/385/GCA_030864385.1_ASM3086438v1/GCA_030864385.1_ASM3086438v1_genomic.fna.gz: Forbidden
 f52afdae53f6f9f6faf5601a84de2a78	2026-03-03 17:41:41	HTTP 403 downloading https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/025/991/245/GCA_025991245.1_GpartN1_1.0/GCA_025991245.1_GpartN1_1.0_genomic.gff.gz: Forbidden
