@@ -3,3 +3,7 @@ annotation_id	run_at	step
 e7431c83cd51bdcd92f381245baf60d3	2026-06-07 13:46:25	unexpected_error
 424c762200204a390db04e563f2d01e1	2026-06-07 13:45:26	URL error downloading http://localhost/annotrieve/pending/GCA_057816405.1: [Errno 111] Connection refused
 b9bffc2b17ac67101cf567bd3549641c	2026-06-07 13:55:31	HTTP 404 downloading https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/028/858/775/GCF_028858775.2_NHGRI_mPanTro3-v2.0_pri/GCF_028858775.2_NHGRI_mPanTro3-v2.0_pri_genomic.fna.gz: Not Found
+424c762200204a390db04e563f2d01e1	2026-06-07 14:01:00	URL error downloading http://localhost/annotrieve/pending/GCA_057816405.1: [Errno 111] Connection refused
+7cad9aa7ba5cef8bcb7d6134058ee7af	2026-06-07 14:01:00	URL error downloading http://localhost/annotrieve/pending/GCA_057814765.1: [Errno 111] Connection refused
+b9bffc2b17ac67101cf567bd3549641c	2026-06-07 14:01:01	HTTP 404 downloading https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/028/858/775/GCF_028858775.2_NHGRI_mPanTro3-v2.0_pri/GCF_028858775.2_NHGRI_mPanTro3-v2.0_pri_genomic.fna.gz: Not Found
+e7431c83cd51bdcd92f381245baf60d3	2026-06-07 14:01:05	unexpected_error
