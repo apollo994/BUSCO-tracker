@@ -277,8 +277,6 @@ ecc332c8f060b7b809fc15de9afd8d9f	2026-03-03 17:31:39	Unexpected error downloadin
 ecc332c8f060b7b809fc15de9afd8d9f	2026-03-03 18:18:48	Unexpected error downloading : unknown url type: ''
 1fc7a384c3c53bc562dd69c6a65b8621	2026-03-03 17:35:56	FASTA index file /tmp/tmp.Cap4jBQJ7n/input.fna.fai created. Warning: couldn't find fasta record for '1A'! Error: no genomic sequence available (check -g option!).
 1fc7a384c3c53bc562dd69c6a65b8621	2026-03-03 18:07:51	FASTA index file /tmp/tmp.GHt7Gq0MwR/input.fna.fai created. Warning: couldn't find fasta record for '1A'! Error: no genomic sequence available (check -g option!).
-3b178f9f415a06915b3f97c52b4f5325	2026-03-03 17:36:01	FASTA index file /tmp/tmp.gue6ys2Jvd/input.fna.fai created.
-3b178f9f415a06915b3f97c52b4f5325	2026-03-03 18:01:51	FASTA index file /tmp/tmp.llFAYd437v/input.fna.fai created.
 53c5b11b3beaaa3f6c3ae9e7687c25bf	2026-03-03 17:36:06	"FASTA index file /tmp/tmp.qT48G8O1xF/input.fna.fai created. corrupted size vs. prev_size /home/runner/work/BUSCO-tracker/BUSCO-tracker/scripts/01_extract_proteins.sh: line 64:  2919 Aborted                 (core dumped) gffread -g ""$FASTA_FILE"" -y ""$ALL_PROTEINS_OUTPUT"" ""$NO_MT_GFF_FILE"""
 53c5b11b3beaaa3f6c3ae9e7687c25bf	2026-03-03 18:01:55	"FASTA index file /tmp/tmp.6AIDBbSM47/input.fna.fai created. corrupted size vs. prev_size /home/runner/work/BUSCO-tracker/BUSCO-tracker/scripts/01_extract_proteins.sh: line 64:  2776 Aborted                 (core dumped) gffread -g ""$FASTA_FILE"" -y ""$ALL_PROTEINS_OUTPUT"" ""$NO_MT_GFF_FILE"""
 6cfce133a25afef586e7f8761f420e1c	2026-03-03 17:36:09	FASTA index file /tmp/tmp.90Wu560vJ7/input.fna.fai created.
@@ -339,8 +337,6 @@ eefa0d27f0c2aebe0a63d49ba509bc17	2026-03-03 18:11:04	"FASTA index file /tmp/tmp.
 82fa78bc2bae0252899f55a0386ba64e	2026-03-03 18:08:15	FASTA index file /tmp/tmp.mMDJYri6q9/input.fna.fai created.
 9a25521821cc6608ad5469d7da480d2a	2026-03-03 17:29:28	FASTA index file /tmp/tmp.7gkkWAOASc/input.fna.fai created.
 9a25521821cc6608ad5469d7da480d2a	2026-03-03 18:08:30	FASTA index file /tmp/tmp.nC4q0TC8zN/input.fna.fai created.
-b6d3ce18b7a210afd7e98700ed476213	2026-03-03 17:29:29	HTTP 404 downloading https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/028/885/655/GCF_028885655.2_NHGRI_mPonAbe1-v2.1_pri/GCF_028885655.2_NHGRI_mPonAbe1-v2.1_pri_genomic.fna.gz: Not Found
-b6d3ce18b7a210afd7e98700ed476213	2026-03-03 18:08:31	HTTP 404 downloading https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/028/885/655/GCF_028885655.2_NHGRI_mPonAbe1-v2.1_pri/GCF_028885655.2_NHGRI_mPonAbe1-v2.1_pri_genomic.fna.gz: Not Found
 d060df651d03597b115071f1dcb96a11	2026-03-03 17:29:32	"FASTA index file /tmp/tmp.l0flrASAWh/input.fna.fai created. malloc(): corrupted top size /home/runner/work/BUSCO-tracker/BUSCO-tracker/scripts/01_extract_proteins.sh: line 64:  3047 Aborted                 (core dumped) gffread -g ""$FASTA_FILE"" -y ""$ALL_PROTEINS_OUTPUT"" ""$NO_MT_GFF_FILE"""
 d060df651d03597b115071f1dcb96a11	2026-03-03 18:08:34	"FASTA index file /tmp/tmp.h5a8GEeUfw/input.fna.fai created. malloc(): corrupted top size /home/runner/work/BUSCO-tracker/BUSCO-tracker/scripts/01_extract_proteins.sh: line 64:  3063 Aborted                 (core dumped) gffread -g ""$FASTA_FILE"" -y ""$ALL_PROTEINS_OUTPUT"" ""$NO_MT_GFF_FILE"""
 ef2fe8c25689eb68589285ecdfb9689a	2026-03-03 17:29:33	HTTP 404 downloading https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/016/700/215/GCF_016700215.2_bGalGal1.pat.whiteleghornlayer.GRCg7w_WZ/GCF_016700215.2_bGalGal1.pat.whiteleghornlayer.GRCg7w_WZ_genomic.fna.gz: Not Found
@@ -389,8 +385,6 @@ b738051b307aeab3b2bcf23023e52a2f	2026-03-03 17:30:09	FASTA index file /tmp/tmp.c
 b738051b307aeab3b2bcf23023e52a2f	2026-03-03 18:11:10	FASTA index file /tmp/tmp.kWCSJdo6HR/input.fna.fai created.
 d1f0a91541851e58c6fa844951535ea7	2026-03-03 17:30:13	FASTA index file /tmp/tmp.J4xD1PcgjW/input.fna.fai created.
 d1f0a91541851e58c6fa844951535ea7	2026-03-03 18:11:15	FASTA index file /tmp/tmp.5eZGvjgxAe/input.fna.fai created.
-f17ba2c2ff21c2b89adc89291eed3266	2026-03-03 17:30:14	HTTP 404 downloading https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/028/885/625/GCF_028885625.2_NHGRI_mPonPyg2-v2.1_pri/GCF_028885625.2_NHGRI_mPonPyg2-v2.1_pri_genomic.fna.gz: Not Found
-f17ba2c2ff21c2b89adc89291eed3266	2026-03-03 18:11:17	HTTP 404 downloading https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/028/885/625/GCF_028885625.2_NHGRI_mPonPyg2-v2.1_pri/GCF_028885625.2_NHGRI_mPonPyg2-v2.1_pri_genomic.fna.gz: Not Found
 35d5896cde402fd151fce0834b0061bd	2026-03-03 17:32:44	FASTA index file /tmp/tmp.xQcn56Qe76/input.fna.fai created.
 35d5896cde402fd151fce0834b0061bd	2026-03-03 18:02:11	FASTA index file /tmp/tmp.qJreX9hbw1/input.fna.fai created.
 4d16b908b5f85da87b8c7b1d58441f2b	2026-03-03 17:32:46	FASTA index file /tmp/tmp.o5Z0RhCUp4/input.fna.fai created.
@@ -409,8 +403,6 @@ e5c85f2beb004a8e1d98139d090e7b0c	2026-03-03 18:07:47	FASTA index file /tmp/tmp.P
 239d9f9f494eefa928e90e9d184cfadb	2026-03-03 18:02:04	FASTA index file /tmp/tmp.kYcYx7es66/input.fna.fai created. Warning: couldn't find fasta record for 'NC_009062.1'! Error: no genomic sequence available (check -g option!).
 3cd8207fd94c013652bfae7b5deb3d3a	2026-03-03 17:31:09	HTTP 404 downloading https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/281/105/GCF_000281105.1_Coni_apol_CBS100218__V1/GCF_000281105.1_Coni_apol_CBS100218__V1_genomic.fna.gz: Not Found
 3cd8207fd94c013652bfae7b5deb3d3a	2026-03-03 18:01:44	HTTP 404 downloading https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/281/105/GCF_000281105.1_Coni_apol_CBS100218__V1/GCF_000281105.1_Coni_apol_CBS100218__V1_genomic.fna.gz: Not Found
-55f06c95b941a423711ea40090ff994a	2026-03-03 17:31:16	FASTA index file /tmp/tmp.lcXs1D5DB5/input.fna.fai created.
-55f06c95b941a423711ea40090ff994a	2026-03-03 18:01:47	FASTA index file /tmp/tmp.Tpq49Gvlcf/input.fna.fai created.
 6e7caf35b39e686b2258c6aca7e5dd30	2026-03-03 17:31:22	FASTA index file /tmp/tmp.ecHhzX5GBX/input.fna.fai created.
 6e7caf35b39e686b2258c6aca7e5dd30	2026-03-03 18:01:53	FASTA index file /tmp/tmp.aF2qK7RHFy/input.fna.fai created.
 84742f7d3828a92d495f80d0c055fc2a	2026-03-03 17:32:52	FASTA index file /tmp/tmp.X1EAqz9Th0/input.fna.fai created. Warning: couldn't find fasta record for 'AYRZ02000001.1'! Error: no genomic sequence available (check -g option!).
@@ -607,8 +599,6 @@ e5cb9b716d1c34338e7bbdebb46b201e	2026-03-03 18:09:01	Unexpected error downloadin
 8639177ba1b30349d3cbee22574897eb	2026-03-03 18:03:25	"2026-03-03 18:03:24 ERROR:	The character ""/"" is present in the fasta header >rna-gnl|WGS:JAZDWV|mrna.YLoK5aEE1C8pY6DBN3eVp/yE0r8.1716383177753.0, which will crash Reader. Please clean the header of your input file. 2026-03-03 18:03:24 ERROR:	BUSCO analysis failed! 2026-03-03 18:03:24 ERROR:	Check the logs, read the user guide (https://busco.ezlab.org/busco_userguide.html), and check the BUSCO issue board on https://gitlab.com/ezlab/busco/issues"
 bc4a81753f9ceef3809ffa56151a90a4	2026-03-03 17:32:39	FASTA index file /tmp/tmp.vocKNpchth/input.fna.fai created.
 bc4a81753f9ceef3809ffa56151a90a4	2026-03-03 18:05:17	FASTA index file /tmp/tmp.2OGXRf2amQ/input.fna.fai created.
-d76a35ef421220de1da759fce6cf07cc	2026-03-03 17:32:49	FASTA index file /tmp/tmp.7X10ElDFE4/input.fna.fai created.
-d76a35ef421220de1da759fce6cf07cc	2026-03-03 18:05:21	HTTP 403 downloading https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/030/272/585/GCA_030272585.1_Bryopsis_sp._KO-2023_v1.0/GCA_030272585.1_Bryopsis_sp._KO-2023_v1.0_genomic.fna.gz: Forbidden
 f48d76642814e4f807409c46aa7e1605	2026-03-03 17:32:52	FASTA index file /tmp/tmp.cNuuBnLBEY/input.fna.fai created.
 f48d76642814e4f807409c46aa7e1605	2026-03-03 18:05:28	FASTA index file /tmp/tmp.vMTOuYgxhY/input.fna.fai created.
 27e9d3f1c35b79ef61a3b80648c0c2ef	2026-03-03 17:29:25	FASTA index file /tmp/tmp.DqIq4E7kr1/input.fna.fai created.
@@ -623,12 +613,8 @@ f48d76642814e4f807409c46aa7e1605	2026-03-03 18:05:28	FASTA index file /tmp/tmp.v
 8646fd9db89bb9c34f4f5fb944f2ff4f	2026-03-03 18:08:30	"FASTA index file /tmp/tmp.INxvcjYyvc/input.fna.fai created. free(): invalid next size (normal) /home/runner/work/BUSCO-tracker/BUSCO-tracker/scripts/01_extract_proteins.sh: line 64:  2882 Aborted                 (core dumped) gffread -g ""$FASTA_FILE"" -y ""$ALL_PROTEINS_OUTPUT"" ""$NO_MT_GFF_FILE"""
 9f393d52b485e7f69bf017a043278ce4	2026-03-03 17:30:03	FASTA index file /tmp/tmp.fjRLZKuhb0/input.fna.fai created. Warning: couldn't find fasta record for 'KB291798'! Error: no genomic sequence available (check -g option!).
 9f393d52b485e7f69bf017a043278ce4	2026-03-03 18:08:49	FASTA index file /tmp/tmp.tbrckPzEbo/input.fna.fai created. Warning: couldn't find fasta record for 'KB291798'! Error: no genomic sequence available (check -g option!).
-d7c23bb48ce53e5c6f89f452493ef80a	2026-03-03 17:31:30	HTTP 404 downloading https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/028/858/775/GCF_028858775.2_NHGRI_mPanTro3-v2.1_pri/GCF_028858775.2_NHGRI_mPanTro3-v2.1_pri_genomic.fna.gz: Not Found
-d7c23bb48ce53e5c6f89f452493ef80a	2026-03-03 18:10:13	HTTP 404 downloading https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/028/858/775/GCF_028858775.2_NHGRI_mPanTro3-v2.1_pri/GCF_028858775.2_NHGRI_mPanTro3-v2.1_pri_genomic.fna.gz: Not Found
 f4f9fb58ea9e2b9bc98b7ce904ac7240	2026-03-03 17:31:33	FASTA index file /tmp/tmp.j6bMGG0uXs/input.fna.fai created.
 f4f9fb58ea9e2b9bc98b7ce904ac7240	2026-03-03 18:10:16	FASTA index file /tmp/tmp.rqTZ4555Cs/input.fna.fai created.
-0bd0bfd99bba00f3036b59c59b3a62b9	2026-03-03 17:31:14	HTTP 404 downloading https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/029/289/425/GCF_029289425.2_NHGRI_mPanPan1-v2.1_pri/GCF_029289425.2_NHGRI_mPanPan1-v2.1_pri_genomic.fna.gz: Not Found
-0bd0bfd99bba00f3036b59c59b3a62b9	2026-03-03 18:09:55	HTTP 404 downloading https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/029/289/425/GCF_029289425.2_NHGRI_mPanPan1-v2.1_pri/GCF_029289425.2_NHGRI_mPanPan1-v2.1_pri_genomic.fna.gz: Not Found
 27f194666131bccd7d9c33b7d9f2c1fe	2026-03-03 17:31:32	FASTA index file /tmp/tmp.HXfMWZK8ke/input.fna.fai created.
 27f194666131bccd7d9c33b7d9f2c1fe	2026-03-03 18:06:34	FASTA index file /tmp/tmp.0QB7T9Y5Dv/input.fna.fai created.
 401bbf7310cf09e76296a25cf77f749d	2026-03-03 17:31:32	HTTP 403 downloading https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/024/341/865/GCA_024341865.1_Gasu_v2/GCA_024341865.1_Gasu_v2_genomic.gff.gz: Forbidden
@@ -719,8 +705,6 @@ d8c16652933fd5d75258c2f49cab4854	2026-03-03 18:04:32	FASTA index file /tmp/tmp.k
 8845a20faad247c80953f328f7828b6a	2026-03-03 18:07:57	"FASTA index file /tmp/tmp.CGc6r6lwTP/input.fna.fai created. free(): invalid next size (normal) /home/runner/work/BUSCO-tracker/BUSCO-tracker/scripts/01_extract_proteins.sh: line 64:  2872 Aborted                 (core dumped) gffread -g ""$FASTA_FILE"" -y ""$ALL_PROTEINS_OUTPUT"" ""$NO_MT_GFF_FILE"""
 a05b7779dc62ca1d1a8882a741a61054	2026-03-03 17:34:24	"FASTA index file /tmp/tmp.9LobIO1hB6/input.fna.fai created. double free or corruption (!prev) /home/runner/work/BUSCO-tracker/BUSCO-tracker/scripts/01_extract_proteins.sh: line 64:  3009 Aborted                 (core dumped) gffread -g ""$FASTA_FILE"" -y ""$ALL_PROTEINS_OUTPUT"" ""$NO_MT_GFF_FILE"""
 a05b7779dc62ca1d1a8882a741a61054	2026-03-03 18:08:03	"FASTA index file /tmp/tmp.CdaC0qbckd/input.fna.fai created. double free or corruption (!prev) /home/runner/work/BUSCO-tracker/BUSCO-tracker/scripts/01_extract_proteins.sh: line 64:  2938 Aborted                 (core dumped) gffread -g ""$FASTA_FILE"" -y ""$ALL_PROTEINS_OUTPUT"" ""$NO_MT_GFF_FILE"""
-beff86ab40f0bd5d6818780882889f79	2026-03-03 17:34:28	FASTA index file /tmp/tmp.xKJMwuc4K4/input.fna.fai created.
-beff86ab40f0bd5d6818780882889f79	2026-03-03 18:08:07	FASTA index file /tmp/tmp.0rHeqOnp4j/input.fna.fai created.
 d8e1dfb14f1574e1ccea135c64a5cc61	2026-03-03 17:34:29	HTTP 403 downloading https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/946/408/725/GCA_946408725.1_Wolfe_SeubUCD646/GCA_946408725.1_Wolfe_SeubUCD646_genomic.fna.gz: Forbidden
 d8e1dfb14f1574e1ccea135c64a5cc61	2026-03-03 18:08:11	FASTA index file /tmp/tmp.DJBN8U5rkj/input.fna.fai created.
 0e3241998a2c22b22713aa8f6c34620a	2026-03-03 17:29:26	FASTA index file /tmp/tmp.wYOGcmSHfQ/input.fna.fai created. Warning: couldn't find fasta record for 'RWGY01000011.1'! Error: no genomic sequence available (check -g option!).
@@ -771,8 +755,6 @@ d9355c633b60b65b4bbb2b825e285c04	2026-03-03 18:03:31	FASTA index file /tmp/tmp.Q
 7f96fb2c052896b9d62ddb49c5a1fca3	2026-03-03 18:07:48	Unexpected error downloading : unknown url type: ''
 946dc7a27554d7446db6645305ad9db5	2026-03-03 17:36:09	FASTA index file /tmp/tmp.ZetVJtABex/input.fna.fai created.
 946dc7a27554d7446db6645305ad9db5	2026-03-03 18:07:58	FASTA index file /tmp/tmp.n6TV9OB8gb/input.fna.fai created.
-af99825338793394a8b35aed29d92245	2026-03-03 17:36:10	HTTP 404 downloading https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/977/012/215/GCA_977012215.2_WildPlant_v2/GCA_977012215.2_WildPlant_v2_genomic.gff.gz: Not Found
-af99825338793394a8b35aed29d92245	2026-03-03 18:08:04	HTTP 404 downloading https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/977/012/215/GCA_977012215.2_WildPlant_v2/GCA_977012215.2_WildPlant_v2_genomic.gff.gz: Not Found
 c8c208469366f46eb386c5ad4c693ccb	2026-03-03 17:38:41	FASTA index file /tmp/tmp.e3zRTohN5D/input.fna.fai created.
 c8c208469366f46eb386c5ad4c693ccb	2026-03-03 18:10:17	FASTA index file /tmp/tmp.ez3wu9wdFm/input.fna.fai created.
 e7b6a3ff27ab90bd7d2d760af4f57098	2026-03-03 17:38:52	FASTA index file /tmp/tmp.WZzbjraTCg/input.fna.fai created.
@@ -881,8 +863,6 @@ f94d692e0c729a9ddfe788d0156e51a3	2026-03-03 18:06:47	FASTA index file /tmp/tmp.k
 10a09d0682fe57c71d117fff611e9397	2026-03-03 18:04:10	"FASTA index file /tmp/tmp.gC9vkaeRwK/input.fna.fai created. free(): invalid pointer /home/runner/work/BUSCO-tracker/BUSCO-tracker/scripts/01_extract_proteins.sh: line 64:  2656 Aborted                 (core dumped) gffread -g ""$FASTA_FILE"" -y ""$ALL_PROTEINS_OUTPUT"" ""$NO_MT_GFF_FILE"""
 2bc0fa419c0ff08b1ae52dda43b366a0	2026-03-03 17:29:09	"FASTA index file /tmp/tmp.RKAYUvnlI9/input.fna.fai created. double free or corruption (!prev) /home/runner/work/BUSCO-tracker/BUSCO-tracker/scripts/01_extract_proteins.sh: line 64:  2642 Aborted                 (core dumped) gffread -g ""$FASTA_FILE"" -y ""$ALL_PROTEINS_OUTPUT"" ""$NO_MT_GFF_FILE"""
 2bc0fa419c0ff08b1ae52dda43b366a0	2026-03-03 18:02:09	"FASTA index file /tmp/tmp.0aD5OHDRCA/input.fna.fai created. double free or corruption (!prev) /home/runner/work/BUSCO-tracker/BUSCO-tracker/scripts/01_extract_proteins.sh: line 64:  2622 Aborted                 (core dumped) gffread -g ""$FASTA_FILE"" -y ""$ALL_PROTEINS_OUTPUT"" ""$NO_MT_GFF_FILE"""
-5d27b5a6aaa1ce1dcb3b990a6b37fc92	2026-03-03 17:29:52	FASTA index file /tmp/tmp.Lchz0LzSal/input.fna.fai created.
-5d27b5a6aaa1ce1dcb3b990a6b37fc92	2026-03-03 18:02:51	FASTA index file /tmp/tmp.3Glmu0RKAt/input.fna.fai created.
 76ddfe8d3909a808af13acc06e2a6c78	2026-03-03 17:30:04	"FASTA index file /tmp/tmp.iJnVAnkIJH/input.fna.fai created. free(): invalid next size (normal) /home/runner/work/BUSCO-tracker/BUSCO-tracker/scripts/01_extract_proteins.sh: line 64:  2819 Aborted                 (core dumped) gffread -g ""$FASTA_FILE"" -y ""$ALL_PROTEINS_OUTPUT"" ""$NO_MT_GFF_FILE"""
 76ddfe8d3909a808af13acc06e2a6c78	2026-03-03 18:03:27	"FASTA index file /tmp/tmp.cRrxBdKNar/input.fna.fai created. free(): invalid next size (normal) /home/runner/work/BUSCO-tracker/BUSCO-tracker/scripts/01_extract_proteins.sh: line 64:  3088 Aborted                 (core dumped) gffread -g ""$FASTA_FILE"" -y ""$ALL_PROTEINS_OUTPUT"" ""$NO_MT_GFF_FILE"""
 8aaf74fad487b78ed900a8d47e3c5e39	2026-03-03 17:30:09	"FASTA index file /tmp/tmp.m8DQ03vLGO/input.fna.fai created. free(): invalid next size (normal) /home/runner/work/BUSCO-tracker/BUSCO-tracker/scripts/01_extract_proteins.sh: line 64:  2885 Aborted                 (core dumped) gffread -g ""$FASTA_FILE"" -y ""$ALL_PROTEINS_OUTPUT"" ""$NO_MT_GFF_FILE"""
@@ -1339,8 +1319,6 @@ e8b22aebb9258342e8497b0c518d32cf	2026-03-03 18:11:31	FASTA index file /tmp/tmp.Z
 92b75d9da8453495c25a131258e5ed2f	2026-03-03 18:03:25	FASTA index file /tmp/tmp.8wQmldkrZ4/input.fna.fai created. Warning: couldn't find fasta record for 'CABIKO010000001.1'! Error: no genomic sequence available (check -g option!).
 ad17ce319b1b5f5524f91cd34ad36ce2	2026-03-03 17:36:12	FASTA index file /tmp/tmp.ZTC1DB2hEx/input.fna.fai created. Warning: couldn't find fasta record for 'NC_003428.1'! Error: no genomic sequence available (check -g option!).
 ad17ce319b1b5f5524f91cd34ad36ce2	2026-03-03 18:04:54	FASTA index file /tmp/tmp.abVCMB3MU6/input.fna.fai created. Warning: couldn't find fasta record for 'NC_003428.1'! Error: no genomic sequence available (check -g option!).
-e4757326e763d76b995404bb1579cd29	2026-03-03 17:36:51	FASTA index file /tmp/tmp.Zpv1lT6C0D/input.fna.fai created.
-e4757326e763d76b995404bb1579cd29	2026-03-03 18:05:32	FASTA index file /tmp/tmp.Ysc6iWVpNV/input.fna.fai created.
 028d1c0bdd1c71ff20c302e7a33124bb	2026-03-03 17:29:58	"FASTA index file /tmp/tmp.SCZkcUUjK0/input.fna.fai created. free(): invalid next size (normal) /home/runner/work/BUSCO-tracker/BUSCO-tracker/scripts/01_extract_proteins.sh: line 64:  2653 Aborted                 (core dumped) gffread -g ""$FASTA_FILE"" -y ""$ALL_PROTEINS_OUTPUT"" ""$NO_MT_GFF_FILE"""
 028d1c0bdd1c71ff20c302e7a33124bb	2026-03-03 18:04:31	"FASTA index file /tmp/tmp.36jmwe0SXp/input.fna.fai created. free(): invalid next size (normal) /home/runner/work/BUSCO-tracker/BUSCO-tracker/scripts/01_extract_proteins.sh: line 64:  2652 Aborted                 (core dumped) gffread -g ""$FASTA_FILE"" -y ""$ALL_PROTEINS_OUTPUT"" ""$NO_MT_GFF_FILE"""
 1cf80d5eb0eec164c7ace8a34a51e165	2026-03-03 17:30:03	FASTA index file /tmp/tmp.hd50FHlLsU/input.fna.fai created.
