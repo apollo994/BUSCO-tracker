@@ -1,27 +1,15 @@
 annotation_id	run_at	step
-7cad9aa7ba5cef8bcb7d6134058ee7af	2026-06-07 13:46:01	URL error downloading http://localhost/annotrieve/pending/GCA_057814765.1: [Errno 111] Connection refused
-e7431c83cd51bdcd92f381245baf60d3	2026-06-07 13:46:25	unexpected_error
-424c762200204a390db04e563f2d01e1	2026-06-07 13:45:26	URL error downloading http://localhost/annotrieve/pending/GCA_057816405.1: [Errno 111] Connection refused
-b9bffc2b17ac67101cf567bd3549641c	2026-06-07 13:55:31	HTTP 404 downloading https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/028/858/775/GCF_028858775.2_NHGRI_mPanTro3-v2.0_pri/GCF_028858775.2_NHGRI_mPanTro3-v2.0_pri_genomic.fna.gz: Not Found
-424c762200204a390db04e563f2d01e1	2026-06-07 14:01:00	URL error downloading http://localhost/annotrieve/pending/GCA_057816405.1: [Errno 111] Connection refused
-7cad9aa7ba5cef8bcb7d6134058ee7af	2026-06-07 14:01:00	URL error downloading http://localhost/annotrieve/pending/GCA_057814765.1: [Errno 111] Connection refused
-b9bffc2b17ac67101cf567bd3549641c	2026-06-07 14:01:01	HTTP 404 downloading https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/028/858/775/GCF_028858775.2_NHGRI_mPanTro3-v2.0_pri/GCF_028858775.2_NHGRI_mPanTro3-v2.0_pri_genomic.fna.gz: Not Found
-e7431c83cd51bdcd92f381245baf60d3	2026-06-07 14:01:05	unexpected_error
 03f35f095025e6b47e5d7b727df0a7fd	2026-06-14 13:54:47	URL error downloading http://localhost/annotrieve/pending/GCA_057930795.1: [Errno 111] Connection refused
 51bd30833e8e9ee1c4707c4d4c5c844a	2026-06-14 13:59:17	URL error downloading http://localhost/annotrieve/pending/GCA_021014955.2: [Errno 111] Connection refused
 b58a413901bcb64f11e5125605ca195b	2026-06-14 14:00:04	URL error downloading http://localhost/annotrieve/pending/GCA_964035615.1: [Errno 111] Connection refused
-e7431c83cd51bdcd92f381245baf60d3	2026-06-14 14:03:03	unexpected_error
 fcd12978cbba6adf3f013d9d7a704240	2026-06-14 14:25:47	URL error downloading http://localhost/annotrieve/pending/GCA_058095685.1: [Errno 111] Connection refused
 279524b119f40dc25402c9eb721ce1e6	2026-06-14 13:59:07	URL error downloading http://localhost/annotrieve/pending/GCA_057930015.1: [Errno 111] Connection refused
 3d5bee4688be6c93ffc1aa22cde90590	2026-06-14 14:03:05	URL error downloading http://localhost/annotrieve/pending/GCA_021014495.2: [Errno 111] Connection refused
-424c762200204a390db04e563f2d01e1	2026-06-14 14:07:11	URL error downloading http://localhost/annotrieve/pending/GCA_057816405.1: [Errno 111] Connection refused
 57ebbcc3f77996a4e3de98d58ebc30c5	2026-06-14 14:03:05	URL error downloading http://localhost/annotrieve/pending/GCA_057930185.1: [Errno 111] Connection refused
 bdacbb49685ed5a8a05b0340c4174f2c	2026-06-14 14:07:10	URL error downloading http://localhost/annotrieve/pending/GCA_040357565.2: [Errno 111] Connection refused
 d814f26982efe731f8ab1bebb1494e7b	2026-06-14 14:07:11	URL error downloading http://localhost/annotrieve/pending/GCA_058131905.1: [Errno 111] Connection refused
 59c542d5e3048c5d1ff9790cadf3f3d2	2026-06-14 14:00:30	URL error downloading http://localhost/annotrieve/pending/GCA_057930165.1: [Errno 111] Connection refused
-7cad9aa7ba5cef8bcb7d6134058ee7af	2026-06-14 14:03:26	URL error downloading http://localhost/annotrieve/pending/GCA_057814765.1: [Errno 111] Connection refused
 c315b517556a2046840319ab62bdcd2b	2026-06-14 14:02:08	unexpected_error
 3b9753e51b913dc7b0213718f9d3fa8f	2026-06-14 14:01:03	URL error downloading http://localhost/annotrieve/pending/GCA_058095615.1: [Errno 111] Connection refused
 5196486dc97cda3e3c981dd223d1d2ee	2026-06-14 14:01:03	URL error downloading http://localhost/annotrieve/pending/GCA_058130045.1: [Errno 111] Connection refused
 ae39898b20d8ecdb763e842633f92342	2026-06-14 14:03:38	URL error downloading http://localhost/annotrieve/pending/GCA_058127775.1: [Errno 111] Connection refused
-b9bffc2b17ac67101cf567bd3549641c	2026-06-14 14:08:50	HTTP 404 downloading https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/028/858/775/GCF_028858775.2_NHGRI_mPanTro3-v2.0_pri/GCF_028858775.2_NHGRI_mPanTro3-v2.0_pri_genomic.fna.gz: Not Found
