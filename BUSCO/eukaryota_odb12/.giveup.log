@@ -149,8 +149,6 @@ eab86de87312db00613d21df0d908396	2026-03-03 18:15:05	HTTP 403 downloading https:
 51a06ffbae93f0f5e74ba9ee86010422	2026-03-03 18:02:34	HTTP 404 downloading https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/015/706/575/GCF_015706575.1_Pmin_3.0/GCF_015706575.1_Pmin_3.0_genomic.fna.gz: Not Found
 6ad84fe3e4d084144a801b962eb07f59	2026-03-03 17:32:01	FASTA index file /tmp/tmp.IIEWM5BMua/input.fna.fai created. Warning: couldn't find fasta record for 'Chloro'! Error: no genomic sequence available (check -g option!).
 6ad84fe3e4d084144a801b962eb07f59	2026-03-03 18:02:38	FASTA index file /tmp/tmp.ItF2JSpwas/input.fna.fai created. Warning: couldn't find fasta record for 'Chloro'! Error: no genomic sequence available (check -g option!).
-81367facf8fc81f83425e44f81cc47af	2026-03-03 17:32:04	FASTA index file /tmp/tmp.HYm3g5lxnG/input.fna.fai created.
-81367facf8fc81f83425e44f81cc47af	2026-03-03 18:02:50	FASTA index file /tmp/tmp.LCNGvCcwou/input.fna.fai created.
 b3db9a5838a85f9623f3834744abf615	2026-03-03 17:32:27	FASTA index file /tmp/tmp.7GeZDvzXOW/input.fna.fai created.
 b3db9a5838a85f9623f3834744abf615	2026-03-03 18:03:20	FASTA index file /tmp/tmp.0Sxqd1AOmu/input.fna.fai created.
 cd69e1c3f687992cfdfef6390b20bf6f	2026-03-03 17:32:35	FASTA index file /tmp/tmp.EJChN5u5wb/input.fna.fai created.
