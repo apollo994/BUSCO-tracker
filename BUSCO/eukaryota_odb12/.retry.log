@@ -1,1 +1,12 @@
 annotation_id	run_at	step
+4d864041b0e89e7c5354789b7a9cc582	2026-06-28 13:35:24	URL error downloading http://localhost/annotrieve/pending/GCA_058224995.1: [Errno 111] Connection refused
+dc84db9bbb3ca6df3b851ccf14f7e21a	2026-06-28 13:49:44	URL error downloading http://localhost/annotrieve/pending/GCA_058224915.1: [Errno 111] Connection refused
+532631bfddccdba3a3641199149389df	2026-06-28 13:31:24	URL error downloading http://localhost/annotrieve/pending/GCA_058225015.1: [Errno 111] Connection refused
+5fd62580d4df85e2a2280e28d5be1d49	2026-06-28 13:31:25	URL error downloading http://localhost/annotrieve/pending/GCA_058224865.1: [Errno 111] Connection refused
+21f0b01160f975a8857032705f0353f4	2026-06-28 13:29:10	URL error downloading http://localhost/annotrieve/pending/GCF_977016875.1: [Errno 111] Connection refused
+541c3deb893ca0932d2f447a435562fd	2026-06-28 13:30:07	URL error downloading http://localhost/annotrieve/pending/GCA_058224955.1: [Errno 111] Connection refused
+881e8fe73d746671281c36ee60a84eab	2026-06-28 13:30:51	URL error downloading http://localhost/annotrieve/pending/GCA_058219135.1: [Errno 111] Connection refused
+c9293144e8b39f997154a64dbfecf954	2026-06-28 13:32:41	URL error downloading http://localhost/annotrieve/pending/GCA_058322835.1: [Errno 111] Connection refused
+ea4c5d4cc5bd0c5bee05e6a0ff519651	2026-06-28 13:32:41	URL error downloading http://localhost/annotrieve/pending/GCA_058369675.1: [Errno 111] Connection refused
+4a2ba43fd1f6bd6278680b1babadbbc9	2026-06-28 13:29:40	URL error downloading http://localhost/annotrieve/pending/GCA_058224935.1: [Errno 111] Connection refused
+98da579cc534c3b7b8bb1630392b1a66	2026-06-28 13:30:24	URL error downloading http://localhost/annotrieve/pending/GCA_058224975.1: [Errno 111] Connection refused
