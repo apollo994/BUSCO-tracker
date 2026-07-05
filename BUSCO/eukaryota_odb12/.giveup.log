@@ -79,8 +79,6 @@ ea1050fcacc9809f5d5b9dcd5dbc710b	2026-03-03 18:17:58	FASTA index file /tmp/tmp.A
 69faa7a03442120ce0363d64364cddc4	2026-03-03 18:02:19	"FASTA index file /tmp/tmp.LEgGxi7tJ2/input.fna.fai created. free(): invalid next size (normal) /home/runner/work/BUSCO-tracker/BUSCO-tracker/scripts/01_extract_proteins.sh: line 64:  2769 Aborted                 (core dumped) gffread -g ""$FASTA_FILE"" -y ""$ALL_PROTEINS_OUTPUT"" ""$NO_MT_GFF_FILE"""
 809a3de45e460aec7134c8a2ae6280e9	2026-03-03 17:30:11	FASTA index file /tmp/tmp.jSyochm3s8/input.fna.fai created.
 809a3de45e460aec7134c8a2ae6280e9	2026-03-03 18:02:23	FASTA index file /tmp/tmp.BkMYnf27Xt/input.fna.fai created.
-96fc1d75c94e053895d75ad9679213d9	2026-03-03 17:30:22	"FASTA index file /tmp/tmp.snQ7mgAgkI/input.fna.fai created. malloc(): invalid size (unsorted) /home/runner/work/BUSCO-tracker/BUSCO-tracker/scripts/01_extract_proteins.sh: line 64:  2943 Aborted                 (core dumped) gffread -g ""$FASTA_FILE"" -y ""$ALL_PROTEINS_OUTPUT"" ""$NO_MT_GFF_FILE"""
-96fc1d75c94e053895d75ad9679213d9	2026-03-03 18:02:27	"FASTA index file /tmp/tmp.y8MKgAEaV5/input.fna.fai created. malloc(): invalid size (unsorted) /home/runner/work/BUSCO-tracker/BUSCO-tracker/scripts/01_extract_proteins.sh: line 64:  2888 Aborted                 (core dumped) gffread -g ""$FASTA_FILE"" -y ""$ALL_PROTEINS_OUTPUT"" ""$NO_MT_GFF_FILE"""
 b234eeea671cd8993eafc002aa4f681f	2026-03-03 17:30:25	HTTP 404 downloading https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/633/615/GCA_000633615.2_Guppy_female_1.0+MT/GCA_000633615.2_Guppy_female_1.0+MT_genomic.fna.gz: Not Found
 b234eeea671cd8993eafc002aa4f681f	2026-03-03 18:02:29	HTTP 404 downloading https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/633/615/GCA_000633615.2_Guppy_female_1.0+MT/GCA_000633615.2_Guppy_female_1.0+MT_genomic.fna.gz: Not Found
 cc301b210e01327ec8ae16e587c1badf	2026-03-03 17:30:29	FASTA index file /tmp/tmp.TNmyEScwv3/input.fna.fai created.
@@ -957,8 +955,6 @@ e86946a65e184f957db1d4d671bd968e	2026-03-03 18:05:12	FASTA index file /tmp/tmp.3
 8b6bfef5bffe8a32f1c6bf3d5f9cbb1e	2026-03-03 18:08:36	HTTP 403 downloading https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/030/267/685/GCA_030267685.1_ASM3026768v1/GCA_030267685.1_ASM3026768v1_genomic.fna.gz: Forbidden
 c1b13337ff2ea8310ee1de8fc98fbc77	2026-03-03 17:36:54	FASTA index file /tmp/tmp.qmeXS75XYz/input.fna.fai created.
 c1b13337ff2ea8310ee1de8fc98fbc77	2026-03-03 18:09:36	FASTA index file /tmp/tmp.XNtjHXSZi3/input.fna.fai created.
-dd1934e66a118ab82d4fd4116b9865de	2026-03-03 17:41:58	"FASTA index file /tmp/tmp.iK5OBkt3t4/input.fna.fai created. free(): invalid next size (normal) /home/runner/work/BUSCO-tracker/BUSCO-tracker/scripts/01_extract_proteins.sh: line 64:  3176 Aborted                 (core dumped) gffread -g ""$FASTA_FILE"" -y ""$ALL_PROTEINS_OUTPUT"" ""$NO_MT_GFF_FILE"""
-dd1934e66a118ab82d4fd4116b9865de	2026-03-03 18:15:39	"FASTA index file /tmp/tmp.S0POujW089/input.fna.fai created. free(): invalid next size (normal) /home/runner/work/BUSCO-tracker/BUSCO-tracker/scripts/01_extract_proteins.sh: line 64:  3237 Aborted                 (core dumped) gffread -g ""$FASTA_FILE"" -y ""$ALL_PROTEINS_OUTPUT"" ""$NO_MT_GFF_FILE"""
 fa4487d8fa48967433e8ce117899c091	2026-03-03 17:42:08	FASTA index file /tmp/tmp.BAfzXGCEFM/input.fna.fai created.
 fa4487d8fa48967433e8ce117899c091	2026-03-03 18:15:46	FASTA index file /tmp/tmp.SR7vqlew5n/input.fna.fai created.
 12e7731ec0b591b199e229ccff75669f	2026-03-03 17:28:55	FASTA index file /tmp/tmp.7j0HOIGz7K/input.fna.fai created.
@@ -1355,8 +1351,6 @@ fd947d459c84792bde2c7c8464262415	2026-03-03 17:34:13	"FASTA index file /tmp/tmp.
 fd947d459c84792bde2c7c8464262415	2026-03-04 16:33:44	FASTA index file /tmp/tmp.9a7HqwRTB4/input.fna.fai created. GffObj::getSpliced() error: improper genomic coordinate 519804 on NC_015121.1 for rna-ViraM_p11
 fe279592c1e3df52d00e879993831ff0	2026-03-03 17:38:16	"FASTA index file /tmp/tmp.C9WJUc2uFJ/input.fna.fai created. Error parsing strand (?) from GFF line: NC_048499.1	RefSeq	mRNA	47121	279475	.	?	.	ID=rna-HJE17_mgp38;Parent=gene-HJE17_mgp38;Dbxref=GeneID:55290668;exception=trans-splicing;gbkey=mRNA;gene=nad5;locus_tag=HJE17_mgp38"
 fe279592c1e3df52d00e879993831ff0	2026-03-04 16:32:42	FASTA index file /tmp/tmp.ynHwxUsfDt/input.fna.fai created. GffObj::getSpliced() error: improper genomic coordinate 453891 on NC_048499.1 for rna-HJE17_mgp32
-39d050cb16f42c194d78f5417996fe18	2026-03-08 12:42:18	unexpected_error
-39d050cb16f42c194d78f5417996fe18	2026-03-08 12:52:04	unexpected_error
 914ac15e51ba1a1546dc227d27c5b780	2026-03-15 12:45:20	unexpected_error
 914ac15e51ba1a1546dc227d27c5b780	2026-03-15 12:54:46	unexpected_error
 5ba7b73ac11bd1fdcb89161e9e686017	2026-03-22 12:45:38	unexpected_error
