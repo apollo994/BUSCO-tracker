@@ -5,14 +5,14 @@ See all results [here](BUSCO/eukaryota_odb12/BUSCO.tsv).
 
 ## Status
 
-**Last updated:** 2026-06-22T10:15:13Z
+**Last updated:** 2026-07-09T15:44:43Z
 
 | Metric | Count | Percentage |
 |--------|-------|------------|
-| **Total annotations** | 15810 | 100% |
-| **Has BUSCO values** | 14937 | 94.5% |
+| **Total annotations** | 15906 | 100% |
+| **Has BUSCO values** | 14966 | 94.1% |
 | **Pending/Retry** | 0 | 0.0% |
-| **Given up** | 873 | 5.5% |
+| **Given up** | 940 | 5.9% |
 
 ![BUSCO eukaryota results](assets/figures/BUSCO_euk_1k.png)
 *Busco values for 1k randomly sampled annotations. Completness is based on eukaryotic BUSCO genes (129). Quality value thresholds are arbitrary*
