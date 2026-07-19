@@ -77,8 +77,6 @@ ea1050fcacc9809f5d5b9dcd5dbc710b	2026-03-03 18:17:58	FASTA index file /tmp/tmp.A
 37e4ff98791bf4063f19bd668ad49c2b	2026-03-03 18:01:29	FASTA index file /tmp/tmp.DLUzNrR4ce/input.fna.fai created.
 69faa7a03442120ce0363d64364cddc4	2026-03-03 17:30:03	"FASTA index file /tmp/tmp.5cdIBx9910/input.fna.fai created. free(): invalid next size (normal) /home/runner/work/BUSCO-tracker/BUSCO-tracker/scripts/01_extract_proteins.sh: line 64:  2819 Aborted                 (core dumped) gffread -g ""$FASTA_FILE"" -y ""$ALL_PROTEINS_OUTPUT"" ""$NO_MT_GFF_FILE"""
 69faa7a03442120ce0363d64364cddc4	2026-03-03 18:02:19	"FASTA index file /tmp/tmp.LEgGxi7tJ2/input.fna.fai created. free(): invalid next size (normal) /home/runner/work/BUSCO-tracker/BUSCO-tracker/scripts/01_extract_proteins.sh: line 64:  2769 Aborted                 (core dumped) gffread -g ""$FASTA_FILE"" -y ""$ALL_PROTEINS_OUTPUT"" ""$NO_MT_GFF_FILE"""
-809a3de45e460aec7134c8a2ae6280e9	2026-03-03 17:30:11	FASTA index file /tmp/tmp.jSyochm3s8/input.fna.fai created.
-809a3de45e460aec7134c8a2ae6280e9	2026-03-03 18:02:23	FASTA index file /tmp/tmp.BkMYnf27Xt/input.fna.fai created.
 b234eeea671cd8993eafc002aa4f681f	2026-03-03 17:30:25	HTTP 404 downloading https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/633/615/GCA_000633615.2_Guppy_female_1.0+MT/GCA_000633615.2_Guppy_female_1.0+MT_genomic.fna.gz: Not Found
 b234eeea671cd8993eafc002aa4f681f	2026-03-03 18:02:29	HTTP 404 downloading https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/633/615/GCA_000633615.2_Guppy_female_1.0+MT/GCA_000633615.2_Guppy_female_1.0+MT_genomic.fna.gz: Not Found
 cc301b210e01327ec8ae16e587c1badf	2026-03-03 17:30:29	FASTA index file /tmp/tmp.TNmyEScwv3/input.fna.fai created.
@@ -379,8 +377,6 @@ f15c17eced5c797036a032de9abf2cd8	2026-03-03 18:03:46	"FASTA index file /tmp/tmp.
 9ba38f75ce91956d4fbb3c95e48522de	2026-03-03 18:11:06	HTTP 404 downloading https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/033/026/295/GCA_033026295.1_C.striata__1.0/GCA_033026295.1_C.striata__1.0_genomic.fna.gz: Not Found
 b738051b307aeab3b2bcf23023e52a2f	2026-03-03 17:30:09	FASTA index file /tmp/tmp.cRYTuBHFCO/input.fna.fai created.
 b738051b307aeab3b2bcf23023e52a2f	2026-03-03 18:11:10	FASTA index file /tmp/tmp.kWCSJdo6HR/input.fna.fai created.
-d1f0a91541851e58c6fa844951535ea7	2026-03-03 17:30:13	FASTA index file /tmp/tmp.J4xD1PcgjW/input.fna.fai created.
-d1f0a91541851e58c6fa844951535ea7	2026-03-03 18:11:15	FASTA index file /tmp/tmp.5eZGvjgxAe/input.fna.fai created.
 35d5896cde402fd151fce0834b0061bd	2026-03-03 17:32:44	FASTA index file /tmp/tmp.xQcn56Qe76/input.fna.fai created.
 35d5896cde402fd151fce0834b0061bd	2026-03-03 18:02:11	FASTA index file /tmp/tmp.qJreX9hbw1/input.fna.fai created.
 4d16b908b5f85da87b8c7b1d58441f2b	2026-03-03 17:32:46	FASTA index file /tmp/tmp.o5Z0RhCUp4/input.fna.fai created.
@@ -977,8 +973,6 @@ faae5606054eaaa73c631985fe5b8e21	2026-03-03 17:33:39	"FASTA index file /tmp/tmp.
 faae5606054eaaa73c631985fe5b8e21	2026-03-03 18:06:49	"FASTA index file /tmp/tmp.ISma6MVBzT/input.fna.fai created. malloc(): invalid next size (unsorted) /home/runner/work/BUSCO-tracker/BUSCO-tracker/scripts/01_extract_proteins.sh: line 64:  3021 Aborted                 (core dumped) gffread -g ""$FASTA_FILE"" -y ""$ALL_PROTEINS_OUTPUT"" ""$NO_MT_GFF_FILE"""
 13a08ac8a46af1c7b1067ccbf86873a0	2026-03-03 17:30:28	FASTA index file /tmp/tmp.zF3A0DUdq3/input.fna.fai created.
 13a08ac8a46af1c7b1067ccbf86873a0	2026-03-03 18:09:59	FASTA index file /tmp/tmp.SRAWNCJjm5/input.fna.fai created.
-2d3b094d7e6db8bcd19576cdbdf234fb	2026-03-03 17:30:36	FASTA index file /tmp/tmp.e1XdKYJ107/input.fna.fai created.
-2d3b094d7e6db8bcd19576cdbdf234fb	2026-03-03 18:08:52	FASTA index file /tmp/tmp.NuoOZHaATx/input.fna.fai created.
 46414172c4e3ae4f2c4580b4ac8ba86d	2026-03-03 17:30:47	FASTA index file /tmp/tmp.54WcCFoUzV/input.fna.fai created. Warning: couldn't find fasta record for 'AATU01014096.1'! Error: no genomic sequence available (check -g option!).
 46414172c4e3ae4f2c4580b4ac8ba86d	2026-03-03 18:06:27	FASTA index file /tmp/tmp.vjZnvdfLFj/input.fna.fai created. Warning: couldn't find fasta record for 'AATU01014096.1'! Error: no genomic sequence available (check -g option!).
 605afd45aff0c88442ccdc08d6a59d4f	2026-03-03 17:30:53	FASTA index file /tmp/tmp.cJ0AGGHoKw/input.fna.fai created.
