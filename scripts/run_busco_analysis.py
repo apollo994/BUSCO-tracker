@@ -167,7 +167,8 @@ def append_to_retry_log(retry_log, annotation_id, step):
     logger.info(f"Logging failure for {annotation_id} to {retry_log}")
     file_exists = Path(retry_log).exists()
     run_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    step = " ".join(step.splitlines()).strip()
+    # Keep the tail: the actual error comes after any tool warnings
+    step = " ".join(step.splitlines()).strip()[-500:]
     with open(retry_log, "a", newline="") as f:
         writer = csv.writer(f, delimiter="\t", lineterminator="\n")
         if not file_exists:
@@ -262,8 +263,8 @@ def main():
             logger.error(f"alias_ids failed with exit code {e.returncode}")
             logger.error(f"stdout: {e.stdout}")
             logger.error(f"stderr: {e.stderr}")
-            append_to_log_tsv(
-                log_tsv, annotation_id, e.stderr if e.stderr else "alias_ids_failed"
+            append_to_retry_log(
+                retry_log, annotation_id, e.stderr if e.stderr else "alias_ids_failed"
             )
             sys.exit(1)
         except FileNotFoundError as e:
@@ -273,8 +274,8 @@ def main():
 
         if not alias_gff_file.exists():
             logger.error(f"Expected aliasMatch file not found: {alias_gff_file}")
-            append_to_log_tsv(
-                log_tsv, annotation_id, alias_stderr if alias_stderr else "alias_output_missing"
+            append_to_retry_log(
+                retry_log, annotation_id, alias_stderr if alias_stderr else "alias_output_missing"
             )
             sys.exit(1)
 
@@ -292,8 +293,8 @@ def main():
         )
 
         if not success:
-            append_to_log_tsv(
-                log_tsv, annotation_id, stderr if stderr else "extract_proteins_failed"
+            append_to_retry_log(
+                retry_log, annotation_id, stderr if stderr else "extract_proteins_failed"
             )
             sys.exit(1)
 
@@ -302,8 +303,8 @@ def main():
         protein_file = work_dir / "annotation.aliasMatch_proteins.faa"
         if not protein_file.exists():
             logger.error(f"Expected protein file not found: {protein_file}")
-            append_to_log_tsv(
-                log_tsv, annotation_id, stderr if stderr else "protein_file_missing"
+            append_to_retry_log(
+                retry_log, annotation_id, stderr if stderr else "protein_file_missing"
             )
             sys.exit(1)
 
@@ -339,8 +340,8 @@ def main():
         )
 
         if not success:
-            append_to_log_tsv(
-                log_tsv, annotation_id, stderr if stderr else "busco_failed"
+            append_to_retry_log(
+                retry_log, annotation_id, stderr if stderr else "busco_failed"
             )
             sys.exit(1)
 
