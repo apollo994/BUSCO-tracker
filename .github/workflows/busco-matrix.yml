@@ -85,7 +85,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ env.CONDA }}/envs/busco-env
-          key: conda-${{ runner.os }}-busco6.0.0-gffread0.12.07-annocli1.0.0
+          key: conda-${{ runner.os }}-busco6.0.0-gffread0.12.07-annocli1.0.3
 
       - name: Install BUSCO and gffread
         if: steps.conda-cache.outputs.cache-hit != 'true'
@@ -99,7 +99,7 @@ jobs:
         if: steps.conda-cache.outputs.cache-hit != 'true'
         shell: bash -el {0}
         run: |
-          git clone --branch v1.0.0 --depth 1 https://github.com/apollo994/annocli.git
+          git clone --branch annolci-v1.0.3 --depth 1 https://github.com/apollo994/annocli.git
           pip install ./annocli/
 
       - name: Run batch
