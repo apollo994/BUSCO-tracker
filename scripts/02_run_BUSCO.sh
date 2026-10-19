@@ -2,7 +2,7 @@
 
 # Check if required arguments are provided
 if [ $# -lt 3 ]; then
-    echo "Error: Missing required arguments"
+    echo "Error: Missing required arguments" >&2
     echo "Usage: $0 <proteins_file> <lineage_folder> <output_folder> [--cpu N]"
     exit 1
 fi
@@ -13,30 +13,30 @@ outfolder=$3
 
 # Check if proteins exists and is not empty
 if [ ! -f "${proteins}" ]; then
-    echo "Error: Protein file ${proteins} does not exist"
+    echo "Error: Protein file ${proteins} does not exist" >&2
     exit 1
 fi
 
 if [ ! -s "${proteins}" ]; then
-    echo "Error: Protein file ${proteins} is empty"
+    echo "Error: Protein file ${proteins} is empty" >&2
     exit 1
 fi
 
 # Check if lineage folder exists
 if [ ! -d "${lineage}" ]; then
-    echo "Error: Lineage folder ${lineage} does not exist"
+    echo "Error: Lineage folder ${lineage} does not exist" >&2
     exit 1
 fi
 
 # Check if outfolder does not already exist
 if [ -d "${outfolder}" ]; then
-    echo "Error: Output folder ${outfolder} already exists"
+    echo "Error: Output folder ${outfolder} already exists" >&2
     exit 1
 fi
 
 # Check if conda is available
 if ! command -v conda &> /dev/null; then
-    echo "Error: conda command not found"
+    echo "Error: conda command not found" >&2
     exit 1
 fi
 

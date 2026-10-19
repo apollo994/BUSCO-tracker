@@ -14,12 +14,12 @@ FASTA_INPUT=$(realpath "$2")
 
 # Check if files exist
 if [ ! -f "$GFF_INPUT" ]; then
-    echo "Error: GFF file '$GFF_INPUT' not found"
+    echo "Error: GFF file '$GFF_INPUT' not found" >&2
     exit 1
 fi
 
 if [ ! -f "$FASTA_INPUT" ]; then
-    echo "Error: FASTA file '$FASTA_INPUT' not found"
+    echo "Error: FASTA file '$FASTA_INPUT' not found" >&2
     exit 1
 fi
 
@@ -55,9 +55,11 @@ else
 fi
 
 
-echo "[$(date +"%Y-%m-%d %H:%M:%S")] Removing MT chromosomes and ? strand..."
+SCRIPT_DIR=$(dirname "$(realpath "$0")")
+
+echo "[$(date +"%Y-%m-%d %H:%M:%S")] Cleaning GFF (MT, ? strand, TOGA2 IDs, missing mRNA level)..."
 CLEAN_GFF_FILE="$INPUT_DIR/${GFF_BASENAME}_no_MT.gff"
-awk '/^#/ || ($1 != "MT" && $1 != "chrM" && $7 != "?")' "$GFF_FILE" > "$CLEAN_GFF_FILE"
+awk -f "$SCRIPT_DIR/clean_gff.awk" "$GFF_FILE" > "$CLEAN_GFF_FILE"
 
 echo "[$(date +"%Y-%m-%d %H:%M:%S")] Extracting aa seqeuences..."
 ALL_PROTEINS_OUTPUT="$INPUT_DIR/${GFF_BASENAME}_ALL_proteins.faa"
@@ -65,11 +67,12 @@ gffread -g "$FASTA_FILE" -y "$ALL_PROTEINS_OUTPUT" "$CLEAN_GFF_FILE"
 
 echo "[$(date +"%Y-%m-%d %H:%M:%S")] Extracting longest isoforms..."
 PROTEIN_OUTPUT="$INPUT_DIR/${GFF_BASENAME}_proteins.faa"
-SCRIPT_DIR=$(dirname "$(realpath "$0")")
-awk -f "$SCRIPT_DIR/longest_transcript_per_gene.awk" "$CLEAN_GFF_FILE" "$ALL_PROTEINS_OUTPUT" > "$PROTEIN_OUTPUT"
+# BUSCO refuses '/' and '"' in the first word of FASTA headers
+awk -f "$SCRIPT_DIR/longest_transcript_per_gene.awk" "$CLEAN_GFF_FILE" "$ALL_PROTEINS_OUTPUT" \
+    | sed '/^>/ s#[/"]#_#g' > "$PROTEIN_OUTPUT"
 
 if [ ! -s "${PROTEIN_OUTPUT}" ]; then
-    echo "Error: Protein file ${PROTEIN_OUTPUT} is empty"
+    echo "Error: Protein file ${PROTEIN_OUTPUT} is empty" >&2
     exit 1
 fi
 
