@@ -12,6 +12,9 @@ logger = logging.getLogger(__name__)
 
 ANNOTATIONS_API = "https://genome.crg.es/annotrieve/api/v0/annotations"
 ASSEMBLIES_API = "https://genome.crg.es/annotrieve/api/v0/assemblies"
+# Annotrieve's placeholder for files not mirrored yet, e.g.
+# http://localhost/annotrieve/pending/GCA_013076305.1
+PENDING_URL = "/annotrieve/pending/"
 
 
 def fetch_json(url):
@@ -122,6 +125,7 @@ def main():
         
         # Process each annotation
         missing_assemblies = set()
+        not_ready = 0
         for idx, annotation in enumerate(all_annotations, 1):
             annotation_id = annotation.get('annotation_id', '')
             
@@ -138,16 +142,24 @@ def main():
             if assembly_accession and not assembly_url:
                 missing_assemblies.add(assembly_accession)
             
+            # Skip annotations whose files are not downloadable yet (empty URL or
+            # Annotrieve placeholder); they are picked up once the URL is real
+            if not annotation_url or not assembly_url or PENDING_URL in annotation_url or PENDING_URL in assembly_url:
+                not_ready += 1
+                continue
+
             # Write row
             writer.writerow([annotation_id, annotation_url, assembly_url])
-            
+
             if idx % 1000 == 0:
                 logger.info(f"Processed {idx}/{len(all_annotations)} annotations...")
-    
+
     if missing_assemblies:
         logger.warning(f"Could not find assembly URLs for {len(missing_assemblies)} assemblies")
-    
-    logger.info(f"Successfully generated {output_file} with {len(all_annotations)} annotations")
+    if not_ready:
+        logger.warning(f"Skipped {not_ready} annotations with empty or pending URLs")
+
+    logger.info(f"Successfully generated {output_file} with {len(all_annotations) - not_ready} annotations")
 
 
 if __name__ == "__main__":
