@@ -4,6 +4,15 @@ on:
   push:
     branches:
       - main
+  # Bot pushes (GITHUB_TOKEN) do not trigger `push`, so also run at the end of
+  # each pipeline cycle
+  workflow_run:
+    workflows:
+      - "Triage Errors"
+    types:
+      - completed
+    branches:
+      - main
   # schedule:
   #   - cron: '0 12 * * 1'  # Every Monday at 12:00 UTC
   workflow_dispatch:  # Allow manual trigger
@@ -11,6 +20,7 @@ on:
 jobs:
   update-status:
     runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     permissions:
       contents: write
     
@@ -72,5 +82,6 @@ jobs:
           else
             TIMESTAMP=$(tail -1 BUSCO/eukaryota_odb12/.status.log | cut -f1)
             git commit -m "Update status — $TIMESTAMP"
+            git pull --rebase
             git push
           fi
