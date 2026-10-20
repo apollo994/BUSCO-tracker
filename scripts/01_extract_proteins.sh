@@ -63,7 +63,8 @@ awk -f "$SCRIPT_DIR/clean_gff.awk" "$GFF_FILE" > "$CLEAN_GFF_FILE"
 
 echo "[$(date +"%Y-%m-%d %H:%M:%S")] Extracting aa seqeuences..."
 ALL_PROTEINS_OUTPUT="$INPUT_DIR/${GFF_BASENAME}_ALL_proteins.faa"
-gffread -g "$FASTA_FILE" -y "$ALL_PROTEINS_OUTPUT" "$CLEAN_GFF_FILE"
+# -S writes stop codons as '*': BUSCO rejects '.' when deciding the input is protein
+gffread -g "$FASTA_FILE" -S -y "$ALL_PROTEINS_OUTPUT" "$CLEAN_GFF_FILE"
 
 echo "[$(date +"%Y-%m-%d %H:%M:%S")] Extracting longest isoforms..."
 PROTEIN_OUTPUT="$INPUT_DIR/${GFF_BASENAME}_proteins.faa"
