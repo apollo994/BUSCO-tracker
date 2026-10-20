@@ -4,15 +4,9 @@ on:
   push:
     branches:
       - main
-  # Bot pushes (GITHUB_TOKEN) do not trigger `push`, so also run at the end of
-  # each pipeline cycle
-  workflow_run:
-    workflows:
-      - "Triage Errors"
-    types:
-      - completed
-    branches:
-      - main
+  # Bot pushes (GITHUB_TOKEN) do not trigger `push`, so BUSCO Matrix Analysis
+  # also calls this workflow as its last job
+  workflow_call:
   # schedule:
   #   - cron: '0 12 * * 1'  # Every Monday at 12:00 UTC
   workflow_dispatch:  # Allow manual trigger
@@ -20,13 +14,20 @@ on:
 jobs:
   update-status:
     runs-on: ubuntu-latest
-    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    # Never run two status updates at the same time
+    concurrency:
+      group: update-status
+      cancel-in-progress: false
     permissions:
       contents: write
-    
+
     steps:
+      # Explicit ref: when called from the matrix, the run's own commit
+      # predates the results the aggregate job just pushed
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ref: main
       
       - name: Set up Python
         uses: actions/setup-python@v5

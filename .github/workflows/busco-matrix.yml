@@ -176,3 +176,14 @@ jobs:
             git pull --rebase
             git push
           fi
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # JOB 4: Refresh .status.log and the README table
+  # Runs inside this workflow, so it finishes before Triage Errors starts
+  # ─────────────────────────────────────────────────────────────────────────────
+  update-status:
+    needs: aggregate
+    if: ${{ !cancelled() && needs.aggregate.result == 'success' }}
+    permissions:
+      contents: write
+    uses: ./.github/workflows/update-status.yml
