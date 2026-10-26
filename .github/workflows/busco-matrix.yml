@@ -99,8 +99,7 @@ jobs:
         if: steps.conda-cache.outputs.cache-hit != 'true'
         shell: bash -el {0}
         run: |
-          git clone --branch annolci-v1.0.3 --depth 1 https://github.com/apollo994/annocli.git
-          pip install ./annocli/
+          pip install annocli==1.0.3
 
       - name: Run batch
         shell: bash -el {0}
