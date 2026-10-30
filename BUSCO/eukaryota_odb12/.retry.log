@@ -1,3 +1,1 @@
 annotation_id	run_at	step
-2dee9cc6e961ca54e403020767bc3445	2026-10-25 15:30:35	URL error downloading https://ftp.ebi.ac.uk/pub/ensemblorganisms/GCA/982/552/405/1/ensembl/2026_06/geneset/genes.gff3.gz: [Errno 111] Connection refused
-1ee436ea31d031bf0287600f2e7bd654	2026-10-25 15:30:32	URL error downloading https://ftp.ebi.ac.uk/pub/ensemblorganisms/GCA/977/066/405/1/ensembl/2026_06/geneset/genes.gff3.gz: [Errno 111] Connection refused
