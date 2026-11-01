@@ -5,12 +5,12 @@ See all results [here](BUSCO/eukaryota_odb12/BUSCO.tsv).
 
 ## Status
 
-**Last updated:** 2026-10-26T09:20:26Z
+**Last updated:** 2026-11-01T17:44:52Z
 
 | Metric | Count | Percentage |
 |--------|-------|------------|
-| **Total annotations** | 20021 | 100% |
-| **Has BUSCO values** | 19679 | 98.3% |
+| **Total annotations** | 20034 | 100% |
+| **Has BUSCO values** | 19692 | 98.3% |
 | **Pending/Retry** | 0 | 0.0% |
 | **Given up** | 342 | 1.7% |
 
